@@ -9,17 +9,12 @@
 - `Code.gs` — backend สำหรับ Google Apps Script (ไฟล์นี้ไม่ได้รันบนเว็บ เอาไปวางใน Apps Script)
 
 ## 1) เปิดใช้ข้อมูลร่วม (backend)
-1. สร้าง Google Sheet ใหม่ → **Extensions → Apps Script** (วิธีนี้ผูกกับชีตให้อัตโนมัติ)
-   - ถ้าเป็นสคริปต์ standalone (ไม่ได้เปิดจากในชีต) ให้ใส่ `SHEET_ID` ใน `Code.gs`
-     (เอาจาก URL ของชีต: `/d/<ID>/edit`)
-2. วางโค้ดจาก `Code.gs` → Save
-3. **Deploy → New deployment → Web app**
-   - Execute as: **Me**
-   - Who has access: **Anyone**
-4. คัดลอก Web app URL (ลงท้าย `/exec`)
-5. ใน `index.html` แก้บรรทัด `const API_URL = ''` → ใส่ URL นั้น
-   > เว้นว่างไว้ = แอปทำงานเฉพาะในเครื่อง (localStorage) เหมือนเดิม
-6. commit + push (GitHub Pages จะอัปเดตให้อัตโนมัติ)
+1. เปิด [script.google.com](https://script.google.com) → New project → วางโค้ดจาก `Code.gs` → Save
+   > ไม่ต้องสร้าง Google Sheet เอง — โค้ดสร้างชีต "Merz Assessment Data" ให้อัตโนมัติครั้งแรก
+   > (ชีตไปอยู่ใน Google Drive ของบัญชีที่ deploy) หรือจะบังคับใช้ชีตเดิมก็ใส่ `SHEET_ID` ได้
+2. **Deploy → New deployment → Web app** — Execute as: **Me** / Who has access: **Anyone** → Authorize
+3. คัดลอก Web app URL (ลงท้าย `/exec`) → ใส่ที่ `const API_URL` ใน `index.html`
+   > URL ปัจจุบันฝังไว้แล้ว ถ้า deploy ใหม่ได้ URL อื่นค่อยแก้ตรงนี้
 
 > แก้ `Code.gs` ทีหลังต้อง **Manage deployments → Edit → New version** ทุกครั้ง
 

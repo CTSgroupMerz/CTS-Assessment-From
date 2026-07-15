@@ -9,8 +9,9 @@
 //  * ทุกครั้งที่แก้ Code.gs ต้อง Deploy → Manage deployments → Edit → New version
 
 var SHEET = 'records';
-// ถ้าสร้างสคริปต์จากในชีต (Extensions → Apps Script) เว้น SHEET_ID ว่างได้
-// ถ้าเป็นสคริปต์ standalone → ใส่ ID ของ Google Sheet (เอาจาก URL: /d/<ID>/edit)
+// ไม่ต้องตั้งค่าอะไร: ถ้าสคริปต์ไม่ได้ผูกกับชีต จะ "สร้าง Google Sheet ใหม่ให้เอง"
+// ครั้งแรก แล้วจำ ID ไว้ใน Script Properties (ชีตจะไปอยู่ใน Google Drive ของผู้ deploy)
+// * จะบังคับใช้ชีตที่มีอยู่แล้ว ก็ใส่ ID ที่ SHEET_ID ได้ (จาก URL: /d/<ID>/edit)
 var SHEET_ID = '';
 
 function doPost(e) {
@@ -33,11 +34,21 @@ function doPost(e) {
 function doGet() { return json_({ ok: true, records: listRecords_() }); }
 
 function sheet_() {
-  var ss = SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActiveSpreadsheet();
-  if (!ss) throw new Error('ไม่พบ Spreadsheet — ใส่ SHEET_ID ใน Code.gs หรือสร้างสคริปต์จากในชีต (Extensions → Apps Script)');
+  var ss = SHEET_ID ? SpreadsheetApp.openById(SHEET_ID)
+                    : (SpreadsheetApp.getActiveSpreadsheet() || openOrCreate_());
   var sh = ss.getSheetByName(SHEET);
   if (!sh) { sh = ss.insertSheet(SHEET); sh.appendRow(['id', 'json', 'updatedAt']); }
   return sh;
+}
+
+// สคริปต์ standalone: ใช้ชีตที่จำไว้ ถ้ายังไม่มี → สร้างใหม่ + จำ ID ไว้ (ครั้งเดียว)
+function openOrCreate_() {
+  var props = PropertiesService.getScriptProperties();
+  var id = props.getProperty('SHEET_ID');
+  if (id) { try { return SpreadsheetApp.openById(id); } catch (e) {} } // เผื่อชีตถูกลบ → สร้างใหม่
+  var ss = SpreadsheetApp.create('Merz Assessment Data');
+  props.setProperty('SHEET_ID', ss.getId());
+  return ss;
 }
 
 function listRecords_() {
