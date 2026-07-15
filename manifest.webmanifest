@@ -1,0 +1,14 @@
+{
+  "name": "Merz Aesthetics · Assessment",
+  "short_name": "Merz Assess",
+  "description": "แบบประเมิน Filler & Botulinum Toxin — Merz Aesthetics",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#16365C",
+  "theme_color": "#16365C",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
