@@ -9,7 +9,9 @@
 - `Code.gs` — backend สำหรับ Google Apps Script (ไฟล์นี้ไม่ได้รันบนเว็บ เอาไปวางใน Apps Script)
 
 ## 1) เปิดใช้ข้อมูลร่วม (backend)
-1. สร้าง Google Sheet ใหม่ → **Extensions → Apps Script**
+1. สร้าง Google Sheet ใหม่ → **Extensions → Apps Script** (วิธีนี้ผูกกับชีตให้อัตโนมัติ)
+   - ถ้าเป็นสคริปต์ standalone (ไม่ได้เปิดจากในชีต) ให้ใส่ `SHEET_ID` ใน `Code.gs`
+     (เอาจาก URL ของชีต: `/d/<ID>/edit`)
 2. วางโค้ดจาก `Code.gs` → Save
 3. **Deploy → New deployment → Web app**
    - Execute as: **Me**

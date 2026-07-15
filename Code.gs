@@ -9,6 +9,9 @@
 //  * ทุกครั้งที่แก้ Code.gs ต้อง Deploy → Manage deployments → Edit → New version
 
 var SHEET = 'records';
+// ถ้าสร้างสคริปต์จากในชีต (Extensions → Apps Script) เว้น SHEET_ID ว่างได้
+// ถ้าเป็นสคริปต์ standalone → ใส่ ID ของ Google Sheet (เอาจาก URL: /d/<ID>/edit)
+var SHEET_ID = '';
 
 function doPost(e) {
   var lock = LockService.getScriptLock();
@@ -30,7 +33,8 @@ function doPost(e) {
 function doGet() { return json_({ ok: true, records: listRecords_() }); }
 
 function sheet_() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActiveSpreadsheet();
+  if (!ss) throw new Error('ไม่พบ Spreadsheet — ใส่ SHEET_ID ใน Code.gs หรือสร้างสคริปต์จากในชีต (Extensions → Apps Script)');
   var sh = ss.getSheetByName(SHEET);
   if (!sh) { sh = ss.insertSheet(SHEET); sh.appendRow(['id', 'json', 'updatedAt']); }
   return sh;

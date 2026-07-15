@@ -1387,7 +1387,7 @@ function dbSave(records) {
 // ── Shared sync (Google Apps Script backend) ─────────────────────────
 // ใส่ /exec URL ที่ได้จากการ deploy Apps Script → ข้อมูลจะ sync ให้ทุกคนเห็นชุดเดียวกัน
 // เว้นว่าง = ทำงานเฉพาะในเครื่อง (localStorage) เหมือนเดิม
-const API_URL = ''; // เช่น 'https://script.google.com/macros/s/XXXX/exec'
+const API_URL = 'https://script.google.com/macros/s/AKfycbyNxXtIOae_Wrp5qqtKbRx2fTMz0CaoTxalnhArtgDPGsmvlAKy0QdG1Oyx8-0PCpJw/exec';
 
 async function apiPost(action, payload) {
   // text/plain → เลี่ยง CORS preflight ของ Apps Script (doPost อ่าน e.postData.contents)
