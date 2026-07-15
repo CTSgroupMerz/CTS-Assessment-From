@@ -472,6 +472,39 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--gray1);color:var(
 }
 @media print{.tab-bar,.action-bar,.hero,.storage-panel,.form-topbar,.page#page-dashboard{display:none!important}.form-panel{display:block!important;padding:0;max-width:100%}body{background:white}.section{box-shadow:none;border:1px solid #ddd;break-inside:avoid}@page{margin:15mm 12mm;size:A4}}
 @media(max-width:480px){.score-btn{width:30px;height:30px;font-size:11px}.action-bar{flex-wrap:wrap}.btn{min-width:45%;font-size:12px}}
+
+/* ═══ POLISH: icons, shadows, gloss, motion ═══════════════════════════ */
+/* SVG line icons */
+.ic{width:1.15em;height:1.15em;display:inline-block;vertical-align:-.18em;flex:none;stroke-width:1.85}
+.btn .ic,.sc-act-btn .ic,.back-btn .ic{width:16px;height:16px;vertical-align:middle}
+.section-hdr .ic{width:17px;height:17px}
+.dash-new-icon .ic{width:32px;height:32px;stroke-width:1.5}
+.sp-fpill .ic,.pill .ic,.tab-btn .ic,.field-label .ic,.sc-meta-item .ic{width:14px;height:14px;vertical-align:-.15em}
+.search-input{background-position:12px center}
+/* circled-letter badge (A/B/C/D) แทน emoji ตัวอักษรในวงกลม */
+.letter-badge{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:6px;background:var(--red-lt);color:var(--red);font-weight:800;font-size:11px;margin-right:4px;font-family:'Space Grotesk',sans-serif;flex:none}
+
+/* soft layered shadows */
+.section,.storage-panel,.stat-card,.dash-records-section,.dash-new-btn{box-shadow:0 1px 2px rgba(22,54,92,.06),0 4px 16px rgba(22,54,92,.08)}
+
+/* buttons: gloss (inset highlight) + tactile lift/press */
+.btn,.dash-new-btn,.sc-act-btn{box-shadow:0 2px 6px rgba(22,54,92,.16),inset 0 1px 0 rgba(255,255,255,.22);will-change:transform}
+.btn:hover,.sc-act-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(22,54,92,.24),inset 0 1px 0 rgba(255,255,255,.3)}
+.btn:active,.sc-act-btn:active,.dash-new-btn:active{transform:translateY(1px);box-shadow:0 1px 3px rgba(22,54,92,.22),inset 0 2px 4px rgba(0,0,0,.12)}
+.dash-new-btn:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(22,54,92,.2),inset 0 1px 0 rgba(255,255,255,.28)}
+
+/* cards & rows: hover elevation */
+.stat-card{transition:transform .2s,box-shadow .2s}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(22,54,92,.15)}
+.record-item{transition:background .15s,transform .15s}
+.record-item:hover{background:var(--gray1);transform:translateX(3px)}
+.pill,.sp-fpill,.tab-btn{transition:all .18s}
+.pill:active,.sp-fpill:active{transform:scale(.96)}
+
+/* hero sheen (แสงสะท้อนบนหัว) */
+.hero::after{content:"";position:absolute;inset:0;background:radial-gradient(130% 90% at 50% -25%,rgba(255,255,255,.2),transparent 62%);pointer-events:none}
+
+@media print{.btn,.dash-new-btn,.sc-act-btn,.section,.stat-card{box-shadow:none!important;transform:none!important}}
 </style>
 </head>
 <body>
@@ -491,15 +524,15 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--gray1);color:var(
 
     <!-- NEW ASSESSMENT BUTTONS -->
     <div class="dash-new-section">
-      <div class="dash-section-label">🆕 เริ่มทำแบบประเมินใหม่</div>
+      <div class="dash-section-label"><span data-ic="plus"></span> เริ่มทำแบบประเมินใหม่</div>
       <div class="dash-btn-row">
         <button class="dash-new-btn filler-btn" onclick="gotoAssessment('filler')">
-          <span class="dash-new-icon">💉</span>
+          <span class="dash-new-icon" data-ic="droplet"></span>
           <div class="dash-new-label">Filler &amp; Biostimulator</div>
           <div class="dash-new-sub">Belotero / Radiesse</div>
         </button>
         <button class="dash-new-btn toxin-btn" onclick="gotoAssessment('toxin')">
-          <span class="dash-new-icon">🧬</span>
+          <span class="dash-new-icon" data-ic="flask"></span>
           <div class="dash-new-label">Botulinum Toxin</div>
           <div class="dash-new-sub">Xeomin</div>
         </button>
@@ -508,18 +541,18 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--gray1);color:var(
 
     <!-- SEARCH + FILTER -->
     <div class="dash-records-section">
-      <div class="dash-section-label">📁 ข้อมูลการประเมินที่บันทึกไว้</div>
+      <div class="dash-section-label"><span data-ic="folder"></span> ข้อมูลการประเมินที่บันทึกไว้</div>
       <div class="search-row">
-        <input class="search-input" id="search-clinic"   placeholder="🏥 ค้นหาตาม Clinic / Hospital..." oninput="renderRecords()">
-        <input class="search-input" id="search-trainee"  placeholder="👤 ค้นหาตาม Trainee Name..." oninput="renderRecords()">
+        <input class="search-input" id="search-clinic"   placeholder="ค้นหาตาม Clinic / Hospital..." oninput="renderRecords()">
+        <input class="search-input" id="search-trainee"  placeholder="ค้นหาตาม Trainee Name..." oninput="renderRecords()">
       </div>
       <div class="sp-filter-pills">
         <div class="sp-fpill on" data-f="all"    onclick="setFilter('all',this)">ทั้งหมด</div>
-        <div class="sp-fpill"    data-f="filler" onclick="setFilter('filler',this)">💉 Filler</div>
-        <div class="sp-fpill"    data-f="toxin"  onclick="setFilter('toxin',this)">🧬 Toxin</div>
+        <div class="sp-fpill"    data-f="filler" onclick="setFilter('filler',this)"><span data-ic="droplet"></span> Filler</div>
+        <div class="sp-fpill"    data-f="toxin"  onclick="setFilter('toxin',this)"><span data-ic="flask"></span> Toxin</div>
       </div>
       <div class="records-list" id="records-list">
-        <div class="empty-state">ยังไม่มีข้อมูลที่บันทึก<br><small>กดปุ่มด้านบนเพื่อเริ่มทำแบบประเมินแล้วกด 💾 Save</small></div>
+        <div class="empty-state">ยังไม่มีข้อมูลที่บันทึก<br><small>กดปุ่มด้านบนเพื่อเริ่มทำแบบประเมินแล้วกดปุ่ม Save</small></div>
       </div>
     </div>
   </div>
@@ -530,14 +563,14 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--gray1);color:var(
 
   <!-- Back button bar -->
   <div class="form-topbar">
-    <button class="back-btn" onclick="gotoDashboard()">← กลับหน้าหลัก</button>
+    <button class="back-btn" onclick="gotoDashboard()"><span data-ic="arrowleft"></span> กลับหน้าหลัก</button>
     <div class="form-topbar-title" id="form-topbar-title">แบบประเมิน</div>
     <div style="width:90px"></div>
   </div>
 
   <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('filler',this)">💉 Filler &amp; Biostimulator</button>
-    <button class="tab-btn" onclick="switchTab('toxin',this)">🧬 Botulinum Toxin</button>
+    <button class="tab-btn active" onclick="switchTab('filler',this)"><span data-ic="droplet"></span> Filler &amp; Biostimulator</button>
+    <button class="tab-btn" onclick="switchTab('toxin',this)"><span data-ic="flask"></span> Botulinum Toxin</button>
   </div>
 
 <!-- ═══════════ FILLER ═══════════ -->
@@ -545,7 +578,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--gray1);color:var(
 
   <!-- Part 0 -->
   <div class="section">
-    <div class="section-hdr navy"><span>📋</span> ข้อมูล Workshop &amp; แพทย์</div>
+    <div class="section-hdr navy"><span data-ic="clipboard"></span> ข้อมูล Workshop &amp; แพทย์</div>
     <div class="section-body">
       <div class="field-grid cols2">
         <div><label class="field-label">Training Topic</label><input class="field-input" id="f-ws" placeholder="หัวข้อการเทรน"></div>
@@ -563,21 +596,21 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--gray1);color:var(
 
   <!-- Part 1 -->
   <div class="section">
-    <div class="section-hdr sky"><span>⚙️</span> PART 1 · ระดับการเทรน</div>
+    <div class="section-hdr sky"><span data-ic="settings"></span> PART 1 · ระดับการเทรน</div>
     <div class="section-body">
       <div style="margin-bottom:14px">
         <label class="field-label">ระดับการเทรน</label>
         <div class="pill-group" id="f-lvl-pills">
-          <div class="pill active-std" data-v="Standard" onclick="setLevel('f','Standard')">🔵 Standard</div>
-          <div class="pill" data-v="Advance" onclick="setLevel('f','Advance')">🟣 Advance</div>
+          <div class="pill active-std" data-v="Standard" onclick="setLevel('f','Standard')">Standard</div>
+          <div class="pill" data-v="Advance" onclick="setLevel('f','Advance')">Advance</div>
         </div>
       </div>
       <div>
         <label class="field-label">เทคนิคที่เทรนวันนี้</label>
         <div class="pill-group" id="f-tch-pills">
-          <div class="pill active-n" data-v="N" onclick="setTech('N')">💉 Needle Only</div>
-          <div class="pill" data-v="C" onclick="setTech('C')">🔸 Cannula Only</div>
-          <div class="pill" data-v="NC" onclick="setTech('NC')">💉🔸 Needle + Cannula</div>
+          <div class="pill active-n" data-v="N" onclick="setTech('N')">Needle Only</div>
+          <div class="pill" data-v="C" onclick="setTech('C')">Cannula Only</div>
+          <div class="pill" data-v="NC" onclick="setTech('NC')">Needle + Cannula</div>
         </div>
       </div>
     </div>
@@ -585,7 +618,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--gray1);color:var(
 
   <!-- Part 2 Filler -->
   <div class="section">
-    <div class="section-hdr teal"><span>🧠</span> PART 2 · Knowledge &amp; Planning</div>
+    <div class="section-hdr teal"><span data-ic="bulb"></span> PART 2 · Knowledge &amp; Planning</div>
     <div class="section-body">
       <div class="part-note">Poor=1 · Fair=2 · Good=3 · Excellent=4 &nbsp;|&nbsp; Standard เต็ม 16 / Advance เต็ม 24 &nbsp;|&nbsp; Pass Standard ≥13 (80%) / Advance ≥20 (85%)</div>
 
@@ -600,7 +633,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--gray1);color:var(
       <div class="score-card tk"><div class="prog-wrap"><div class="score-card-label" id="f-s2-lbl">คะแนน Part 2 (Standard)</div><div class="prog-bar"><div class="prog-fill" id="f-p2" style="width:0%;background:var(--teal)"></div></div></div><div><div class="score-card-val" id="f-v2">0/16</div><div class="score-card-pct" id="f-pct2">0%</div></div><div class="badge bf" id="f-b2">Re-train</div></div>
 
       <div id="f-adv">
-        <div class="adv-banner">🟣 ADVANCE ONLY — ข้ามได้ถ้าเลือก Standard</div>
+        <div class="adv-banner">ADVANCE ONLY — ข้ามได้ถ้าเลือก Standard</div>
         <div class="item-card adv"><div class="item-top"><div class="item-num p">2.5★</div><div class="item-desc"><div class="item-title">Combination Treatment Planning</div><div class="item-sub">วางแผนร่วมกับ toxin / energy device อื่น</div><div class="item-crit p">Excellent = Plan combination ปลอดภัย มี rationale</div></div></div><div class="item-bottom"><div class="pfge-row" id="f25r"><div class="pfge-btn" onclick="setPFGE('f25',1,this,'f')">Poor</div><div class="pfge-btn" onclick="setPFGE('f25',2,this,'f')">Fair</div><div class="pfge-btn" onclick="setPFGE('f25',3,this,'f')">Good</div><div class="pfge-btn" onclick="setPFGE('f25',4,this,'f')">Excellent</div></div><textarea class="comment-input" placeholder="Trainer Comment..."></textarea></div></div>
         <div class="item-card adv"><div class="item-top"><div class="item-num p">2.6★</div><div class="item-desc"><div class="item-title">Complex Case Assessment</div><div class="item-sub">Asymmetry, volume deficit หนัก, post-complication</div><div class="item-crit p">Excellent = ประเมิน complex case ได้ถูกต้อง</div></div></div><div class="item-bottom"><div class="pfge-row" id="f26r"><div class="pfge-btn" onclick="setPFGE('f26',1,this,'f')">Poor</div><div class="pfge-btn" onclick="setPFGE('f26',2,this,'f')">Fair</div><div class="pfge-btn" onclick="setPFGE('f26',3,this,'f')">Good</div><div class="pfge-btn" onclick="setPFGE('f26',4,this,'f')">Excellent</div></div><textarea class="comment-input" placeholder="Trainer Comment..."></textarea></div></div>
       </div>
@@ -609,39 +642,39 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--gray1);color:var(
 
   <!-- Part 3 Filler -->
   <div class="section">
-    <div class="section-hdr red"><span>⭐</span> PART 3 · Injection Technique — Critical Gate</div>
+    <div class="section-hdr red"><span data-ic="star"></span> PART 3 · Injection Technique — Critical Gate</div>
     <div class="section-body">
-      <div class="part-note red-note">⭐ Part นี้สำคัญที่สุด — Pass ≥80%(Std)/85%(Adv) · Conditional 70–79%/75–84% · Re-train &lt;70%/&lt;75% · คะแนน 0–10 ต่อข้อ</div>
+      <div class="part-note red-note">★ Part นี้สำคัญที่สุด — Pass ≥80%(Std)/85%(Adv) · Conditional 70–79%/75–84% · Re-train &lt;70%/&lt;75% · คะแนน 0–10 ต่อข้อ</div>
 
-      <div class="sub-hdr r">🅐 Landmark &amp; Safety Marking</div>
+      <div class="sub-hdr r"><span class="letter-badge">A</span>Landmark &amp; Safety Marking</div>
       <div class="item-card"><div class="item-top"><div class="item-num r">3A.1</div><div class="item-desc"><div class="item-title">Injection Point Marking — accuracy, symmetry</div><div class="item-crit r">10 = Mark ถูกต้อง สมมาตร สอดคล้อง anatomy</div></div></div><div class="item-bottom"><div class="score-row" id="f3a1r">`+ mkScoreBtns('f3a1','f') +`</div><textarea class="comment-input" placeholder="Trainer Comment..."></textarea></div></div>
       <div class="item-card"><div class="item-top"><div class="item-num r">3A.2</div><div class="item-desc"><div class="item-title">Safe Boundary &amp; Vector Planning</div><div class="item-sub">ระบุ danger zone + ทิศทางการฉีด</div><div class="item-crit r">10 = ระบุ boundary ครบ วาง vector เหมาะสม</div></div></div><div class="item-bottom"><div class="score-row" id="f3a2r">`+ mkScoreBtns('f3a2','f') +`</div><textarea class="comment-input" placeholder="Trainer Comment..."></textarea></div></div>
 
       <div id="f-3b">
-        <div class="sub-hdr r">🅑 Needle Technique</div>
+        <div class="sub-hdr r"><span class="letter-badge">B</span>Needle Technique</div>
         <div class="item-card"><div class="item-top"><div class="item-num r">3B.1</div><div class="item-desc"><div class="item-title">Needle Handling, Angle &amp; Depth</div><div class="item-crit r">10 = ถือเข็มมั่นคง มุมและ depth ถูกต้องตาม plane</div></div></div><div class="item-bottom"><div class="score-row" id="f3b1r">`+ mkScoreBtns('f3b1','f') +`</div><textarea class="comment-input" placeholder="Trainer Comment..."></textarea></div></div>
         <div class="item-card"><div class="item-top"><div class="item-num r">3B.2</div><div class="item-desc"><div class="item-title">Product Placement Accuracy</div><div class="item-sub">ยาอยู่ใน plane ที่ต้องการ ไม่มี lump/migration</div><div class="item-crit r">10 = placement ถูกต้อง ไม่มี lump</div></div></div><div class="item-bottom"><div class="score-row" id="f3b2r">`+ mkScoreBtns('f3b2','f') +`</div><textarea class="comment-input" placeholder="Trainer Comment..."></textarea></div></div>
         <div class="item-card"><div class="item-top"><div class="item-num r">3B.3</div><div class="item-desc"><div class="item-title">Tissue Control &amp; Injection Smoothness</div><div class="item-crit r">10 = ควบคุมเนื้อเยื่อได้ดี ฉีดราบรื่น</div></div></div><div class="item-bottom"><div class="score-row" id="f3b3r">`+ mkScoreBtns('f3b3','f') +`</div><textarea class="comment-input" placeholder="Trainer Comment..."></textarea></div></div>
       </div>
 
       <div id="f-3c">
-        <div class="sub-hdr r">🅒 Cannula Technique</div>
+        <div class="sub-hdr r"><span class="letter-badge">C</span>Cannula Technique</div>
         <div class="item-card"><div class="item-top"><div class="item-num r">3C.1</div><div class="item-desc"><div class="item-title">Cannula Entry &amp; Plane Control</div><div class="item-sub">เจาะรูถูกต้อง, เคลื่อน cannula ใน plane ตลอด</div><div class="item-crit r">10 = entry ถูกต้อง plane ไม่เบี่ยง</div></div></div><div class="item-bottom"><div class="score-row" id="f3c1r">`+ mkScoreBtns('f3c1','f') +`</div><textarea class="comment-input" placeholder="Trainer Comment..."></textarea></div></div>
         <div class="item-card"><div class="item-top"><div class="item-num r">3C.2</div><div class="item-desc"><div class="item-title">Product Placement Accuracy (Cannula)</div><div class="item-sub">ยาอยู่ใน plane ที่ต้องการ ไม่มี lump/migration</div><div class="item-crit r">10 = placement ถูกต้อง ยาอยู่ถูก plane ไม่มี lump</div></div></div><div class="item-bottom"><div class="score-row" id="f3c2r">`+ mkScoreBtns('f3c2','f') +`</div><textarea class="comment-input" placeholder="Trainer Comment..."></textarea></div></div>
         <div class="item-card"><div class="item-top"><div class="item-num r">3C.3</div><div class="item-desc"><div class="item-title">Tissue Feedback Awareness &amp; Smoothness</div><div class="item-sub">รับรู้ความต้านทาน ปรับแรงได้ เคลื่อนราบรื่น</div><div class="item-crit r">10 = รับรู้ feedback ได้ดี เคลื่อนราบรื่นมั่นใจ</div></div></div><div class="item-bottom"><div class="score-row" id="f3c3r">`+ mkScoreBtns('f3c3','f') +`</div><textarea class="comment-input" placeholder="Trainer Comment..."></textarea></div></div>
       </div>
 
-      <div class="sub-hdr r">🅓 Sterile Technique &amp; Safety</div>
+      <div class="sub-hdr r"><span class="letter-badge">D</span>Sterile Technique &amp; Safety</div>
       <div class="item-card"><div class="item-top"><div class="item-num r">3D.1</div><div class="item-desc"><div class="item-title">Hand Hygiene, Glove &amp; Sterile Field Preparation</div><div class="item-crit r">10 = ถูกต้องตาม standard ทุกขั้นตอน</div></div></div><div class="item-bottom"><div class="score-row" id="f3d1r">`+ mkScoreBtns('f3d1','f') +`</div><textarea class="comment-input" placeholder="Trainer Comment..."></textarea></div></div>
       <div class="item-card"><div class="item-top"><div class="item-num r">3D.2</div><div class="item-desc"><div class="item-title">Sharps Safety &amp; Complication First Response</div><div class="item-sub">ไม่ recap สองมือ, รู้จัก early sign + management</div><div class="item-crit r">10 = sharps safety สมบูรณ์ ระบุ complication + management ได้</div></div></div><div class="item-bottom"><div class="score-row" id="f3d2r">`+ mkScoreBtns('f3d2','f') +`</div><textarea class="comment-input" placeholder="Trainer Comment..."></textarea></div></div>
 
-      <div class="score-card rk"><div class="prog-wrap"><div class="score-card-label">⭐ คะแนน Part 3</div><div class="prog-bar"><div class="prog-fill" id="f-p3" style="width:0%;background:var(--red)"></div></div></div><div><div class="score-card-val" id="f-v3">0</div><div class="score-card-pct" id="f-pct3">/ — คะแนน</div></div><div class="badge bf" id="f-b3">Re-train</div></div>
+      <div class="score-card rk"><div class="prog-wrap"><div class="score-card-label">★ คะแนน Part 3</div><div class="prog-bar"><div class="prog-fill" id="f-p3" style="width:0%;background:var(--red)"></div></div></div><div><div class="score-card-val" id="f-v3">0</div><div class="score-card-pct" id="f-pct3">/ — คะแนน</div></div><div class="badge bf" id="f-b3">Re-train</div></div>
     </div>
   </div>
 
   <!-- Part 4 Filler -->
   <div class="section">
-    <div class="section-hdr green"><span>🏁</span> PART 4 · Post-Procedure &amp; Professional</div>
+    <div class="section-hdr green"><span data-ic="flag"></span> PART 4 · Post-Procedure &amp; Professional</div>
     <div class="section-body">
       <div class="part-note">Poor=1 · Fair=2 · Good=3 · Excellent=4 &nbsp;|&nbsp; เต็ม 12 คะแนน &nbsp;|&nbsp; Pass Standard ≥10 (80%) / Advance ≥10 (85%)</div>
       <div class="item-card"><div class="item-top"><div class="item-num g">4.1</div><div class="item-desc"><div class="item-title">Aftercare Instructions &amp; Red Flag Explanation</div><div class="item-sub">ครบถ้วนชัดเจน + signs ที่ต้องกลับมา</div><div class="item-crit g">Excellent = ครบทุกประเด็น ระบุ red flag ได้ครบ</div></div></div><div class="item-bottom"><div class="pfge-row" id="f41r"><div class="pfge-btn" onclick="setPFGE('f41',1,this,'f')">Poor</div><div class="pfge-btn" onclick="setPFGE('f41',2,this,'f')">Fair</div><div class="pfge-btn" onclick="setPFGE('f41',3,this,'f')">Good</div><div class="pfge-btn" onclick="setPFGE('f41',4,this,'f')">Excellent</div></div><textarea class="comment-input" placeholder="Trainer Comment..."></textarea></div></div>
@@ -653,19 +686,19 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--gray1);color:var(
 
   <!-- Part 5 Filler -->
   <div class="section">
-    <div class="section-hdr navy"><span>🏆</span> PART 5 · ผลการประเมิน</div>
+    <div class="section-hdr navy"><span data-ic="award"></span> PART 5 · ผลการประเมิน</div>
     <div class="section-body">
-      <div id="f-result" class="result-card none"><div class="r-icon">📝</div><div class="r-label">กรอกคะแนนเพื่อดูผล</div><div class="r-desc">กรุณาให้คะแนนในทุก Part</div></div>
-      <div style="margin:14px 0 8px;font-weight:700;color:var(--navy);font-size:13px">📊 สรุปคะแนนอัตโนมัติ</div>
+      <div id="f-result" class="result-card none"><div class="r-icon"></div><div class="r-label">กรอกคะแนนเพื่อดูผล</div><div class="r-desc">กรุณาให้คะแนนในทุก Part</div></div>
+      <div style="margin:14px 0 8px;font-weight:700;color:var(--navy);font-size:13px"><span data-ic="chart"></span> สรุปคะแนนอัตโนมัติ</div>
       <div class="score-card tk" style="margin-bottom:8px"><div class="score-card-label">Part 2 — Knowledge &amp; Planning</div><div><div class="score-card-val" id="f-s2v" style="font-size:18px">0</div><div class="score-card-pct" id="f-s2d">/ 16 คะแนน</div></div><div class="badge bn" id="f-s2b">—</div></div>
-      <div class="score-card rk" style="margin-bottom:8px"><div class="score-card-label">Part 3 — Injection Technique ⭐</div><div><div class="score-card-val" id="f-s3v" style="font-size:18px">0</div><div class="score-card-pct" id="f-s3d">/ — คะแนน</div></div><div class="badge bn" id="f-s3b">—</div></div>
+      <div class="score-card rk" style="margin-bottom:8px"><div class="score-card-label">Part 3 — Injection Technique ★</div><div><div class="score-card-val" id="f-s3v" style="font-size:18px">0</div><div class="score-card-pct" id="f-s3d">/ — คะแนน</div></div><div class="badge bn" id="f-s3b">—</div></div>
       <div class="score-card gk" style="margin-bottom:16px"><div class="score-card-label">Part 4 — Post-Procedure &amp; Professional</div><div><div class="score-card-val" id="f-s4v" style="font-size:18px">0</div><div class="score-card-pct">/ 12 คะแนน</div></div><div class="badge bn" id="f-s4b">—</div></div>
-      <div style="margin-bottom:12px"><label class="field-label">✏️ Trainer Override</label><select class="override-sel" id="f-ov" onchange="calc('f')"><option value="auto">— ใช้ผลอัตโนมัติ —</option><option value="pass">✅ PASS</option><option value="cond">⚠️ CONDITIONAL PASS</option><option value="fail">🔁 RE-TRAINING REQUIRED</option></select></div>
+      <div style="margin-bottom:12px"><label class="field-label"><span data-ic="pencil"></span> Trainer Override</label><select class="override-sel" id="f-ov" onchange="calc('f')"><option value="auto">— ใช้ผลอัตโนมัติ —</option><option value="pass">PASS</option><option value="cond">CONDITIONAL PASS</option><option value="fail">RE-TRAINING REQUIRED</option></select></div>
       <div class="field-grid cols2" style="margin-bottom:12px">
-        <div><label class="field-label">💪 จุดแข็ง (Strengths)</label><textarea class="field-textarea" id="f-str" placeholder="..."></textarea></div>
-        <div><label class="field-label">📈 Areas for Improvement</label><textarea class="field-textarea" id="f-imp" placeholder="..."></textarea></div>
-        <div><label class="field-label">🎯 Action Plan</label><textarea class="field-textarea" id="f-act" placeholder="สิ่งที่ต้องทำก่อน Re-assess..."></textarea></div>
-        <div><label class="field-label">📅 วันนัด Re-assess</label><input class="field-input" id="f-ras" type="date"></div>
+        <div><label class="field-label"><span data-ic="zap"></span> จุดแข็ง (Strengths)</label><textarea class="field-textarea" id="f-str" placeholder="..."></textarea></div>
+        <div><label class="field-label"><span data-ic="trend"></span> Areas for Improvement</label><textarea class="field-textarea" id="f-imp" placeholder="..."></textarea></div>
+        <div><label class="field-label"><span data-ic="target"></span> Action Plan</label><textarea class="field-textarea" id="f-act" placeholder="สิ่งที่ต้องทำก่อน Re-assess..."></textarea></div>
+        <div><label class="field-label"><span data-ic="calendar"></span> วันนัด Re-assess</label><input class="field-input" id="f-ras" type="date"></div>
       </div>
       <div class="sig-row"><div><div class="field-label" style="margin-bottom:6px">Trainee Signature</div><div class="sig-box">ลายมือชื่อแพทย์</div></div><div><div class="field-label" style="margin-bottom:6px">Trainer Signature</div><div class="sig-box">ลายมือชื่อ Trainer</div></div></div>
       <div style="margin-top:8px;text-align:center;font-size:11px;padding:10px;background:var(--navy);border-radius:var(--radius-sm);color:rgba(255,255,255,.5)">Merz Aesthetics Assessment Form · Filler &amp; Biostimulator · TRAINER COPY</div>
@@ -677,7 +710,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--gray1);color:var(
 <div id="panel-toxin" class="form-panel">
   <!-- Part 0 -->
   <div class="section">
-    <div class="section-hdr navy"><span>📋</span> ข้อมูล Workshop &amp; แพทย์</div>
+    <div class="section-hdr navy"><span data-ic="clipboard"></span> ข้อมูล Workshop &amp; แพทย์</div>
     <div class="section-body">
       <div class="field-grid cols2">
         <div><label class="field-label">Training Topic</label><input class="field-input" id="t-ws" placeholder="หัวข้อการเทรน"></div>
@@ -695,19 +728,19 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--gray1);color:var(
 
   <!-- Part 1 Toxin -->
   <div class="section">
-    <div class="section-hdr sky"><span>⚙️</span> PART 1 · ระดับการเทรน</div>
+    <div class="section-hdr sky"><span data-ic="settings"></span> PART 1 · ระดับการเทรน</div>
     <div class="section-body">
       <label class="field-label">ระดับการเทรน</label>
       <div class="pill-group" id="t-lvl-pills">
-        <div class="pill active-std" data-v="Standard" onclick="setLevel('t','Standard')">🔵 Standard</div>
-        <div class="pill" data-v="Advance" onclick="setLevel('t','Advance')">🟣 Advance</div>
+        <div class="pill active-std" data-v="Standard" onclick="setLevel('t','Standard')">Standard</div>
+        <div class="pill" data-v="Advance" onclick="setLevel('t','Advance')">Advance</div>
       </div>
     </div>
   </div>
 
   <!-- Part 2 Toxin -->
   <div class="section">
-    <div class="section-hdr teal"><span>🧠</span> PART 2 · Knowledge &amp; Planning</div>
+    <div class="section-hdr teal"><span data-ic="bulb"></span> PART 2 · Knowledge &amp; Planning</div>
     <div class="section-body">
       <div class="part-note">Poor=1 · Fair=2 · Good=3 · Excellent=4 &nbsp;|&nbsp; Standard เต็ม 16 / Advance เต็ม 24 &nbsp;|&nbsp; Pass Standard ≥13 (80%) / Advance ≥20 (85%)</div>
       <div class="item-card"><div class="item-top"><div class="item-num">2.1</div><div class="item-desc"><div class="item-title">Muscle Anatomy &amp; Danger Zones</div><div class="item-sub">Origin/insertion ของ muscles ที่เกี่ยวข้อง, ptosis risk zone</div><div class="item-crit t">Excellent = อธิบาย muscle action + danger zone ได้ครบ</div></div></div><div class="item-bottom"><div class="pfge-row" id="t21r"><div class="pfge-btn" onclick="setPFGE('t21',1,this,'t')">Poor</div><div class="pfge-btn" onclick="setPFGE('t21',2,this,'t')">Fair</div><div class="pfge-btn" onclick="setPFGE('t21',3,this,'t')">Good</div><div class="pfge-btn" onclick="setPFGE('t21',4,this,'t')">Excellent</div></div><textarea class="comment-input" placeholder="Trainer Comment..."></textarea></div></div>
@@ -718,7 +751,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--gray1);color:var(
       <div class="score-card tk"><div class="prog-wrap"><div class="score-card-label" id="t-s2-lbl">คะแนน Part 2 (Standard)</div><div class="prog-bar"><div class="prog-fill" id="t-p2" style="width:0%;background:var(--teal)"></div></div></div><div><div class="score-card-val" id="t-v2">0/16</div><div class="score-card-pct" id="t-pct2">0%</div></div><div class="badge bf" id="t-b2">Re-train</div></div>
 
       <div id="t-adv">
-        <div class="adv-banner">🟣 ADVANCE ONLY — ข้ามได้ถ้าเลือก Standard</div>
+        <div class="adv-banner">ADVANCE ONLY — ข้ามได้ถ้าเลือก Standard</div>
         <div class="item-card adv"><div class="item-top"><div class="item-num p">2.5★</div><div class="item-desc"><div class="item-title">Combination Planning — Toxin + Filler / Energy Device</div><div class="item-sub">วางแผน combination treatment ได้ปลอดภัย มี rationale</div><div class="item-crit p">Excellent = Plan combination ได้สมเหตุสมผล ปลอดภัย</div></div></div><div class="item-bottom"><div class="pfge-row" id="t25r"><div class="pfge-btn" onclick="setPFGE('t25',1,this,'t')">Poor</div><div class="pfge-btn" onclick="setPFGE('t25',2,this,'t')">Fair</div><div class="pfge-btn" onclick="setPFGE('t25',3,this,'t')">Good</div><div class="pfge-btn" onclick="setPFGE('t25',4,this,'t')">Excellent</div></div><textarea class="comment-input" placeholder="Trainer Comment..."></textarea></div></div>
         <div class="item-card adv"><div class="item-top"><div class="item-num p">2.6★</div><div class="item-desc"><div class="item-title">Dose Adjustment &amp; Asymmetry Correction Strategy</div><div class="item-sub">ปรับ dose ตาม muscle re-education, แก้ asymmetry</div><div class="item-crit p">Excellent = ปรับ dose ได้เหมาะสมกับ response</div></div></div><div class="item-bottom"><div class="pfge-row" id="t26r"><div class="pfge-btn" onclick="setPFGE('t26',1,this,'t')">Poor</div><div class="pfge-btn" onclick="setPFGE('t26',2,this,'t')">Fair</div><div class="pfge-btn" onclick="setPFGE('t26',3,this,'t')">Good</div><div class="pfge-btn" onclick="setPFGE('t26',4,this,'t')">Excellent</div></div><textarea class="comment-input" placeholder="Trainer Comment..."></textarea></div></div>
       </div>
@@ -727,26 +760,26 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--gray1);color:var(
 
   <!-- Part 3 Toxin -->
   <div class="section">
-    <div class="section-hdr red"><span>⭐</span> PART 3 · Injection Technique — Critical Gate</div>
+    <div class="section-hdr red"><span data-ic="star"></span> PART 3 · Injection Technique — Critical Gate</div>
     <div class="section-body">
-      <div class="part-note red-note">⭐ Part นี้สำคัญที่สุด — Pass ≥80%(Std)/85%(Adv) · Conditional 70–79%/75–84% · Re-train &lt;70%/&lt;75% · คะแนน 0–10 ต่อข้อ</div>
-      <div class="sub-hdr r">🅐 Landmark &amp; Safety Marking</div>
+      <div class="part-note red-note">★ Part นี้สำคัญที่สุด — Pass ≥80%(Std)/85%(Adv) · Conditional 70–79%/75–84% · Re-train &lt;70%/&lt;75% · คะแนน 0–10 ต่อข้อ</div>
+      <div class="sub-hdr r"><span class="letter-badge">A</span>Landmark &amp; Safety Marking</div>
       <div class="item-card"><div class="item-top"><div class="item-num r">3A.1</div><div class="item-desc"><div class="item-title">Injection Point Marking — ถูกตาม anatomy atlas, สมมาตร</div><div class="item-crit r">10 = Mark ถูกต้องทุกจุด สมมาตร</div></div></div><div class="item-bottom"><div class="score-row" id="t3a1r"></div><textarea class="comment-input" placeholder="Trainer Comment..."></textarea></div></div>
       <div class="item-card"><div class="item-top"><div class="item-num r">3A.2</div><div class="item-desc"><div class="item-title">Dose Calculation &amp; Syringe Preparation</div><div class="item-sub">Dilution ถูกต้อง unit ถูกต้อง</div><div class="item-crit r">10 = คำนวณและเตรียม syringe ถูกต้องสมบูรณ์</div></div></div><div class="item-bottom"><div class="score-row" id="t3a2r"></div><textarea class="comment-input" placeholder="Trainer Comment..."></textarea></div></div>
-      <div class="sub-hdr r">🅑 Needle Technique</div>
+      <div class="sub-hdr r"><span class="letter-badge">B</span>Needle Technique</div>
       <div class="item-card"><div class="item-top"><div class="item-num r">3B.1</div><div class="item-desc"><div class="item-title">Needle Angle &amp; Depth — ถูกต้องตาม muscle depth</div><div class="item-crit r">10 = depth และ angle ถูกต้อง intramuscular/subdermal</div></div></div><div class="item-bottom"><div class="score-row" id="t3b1r"></div><textarea class="comment-input" placeholder="Trainer Comment..."></textarea></div></div>
       <div class="item-card"><div class="item-top"><div class="item-num r">3B.2</div><div class="item-desc"><div class="item-title">Injection Speed &amp; Volume Accuracy</div><div class="item-sub">Slow steady injection, volume ต่อจุดถูกต้อง</div><div class="item-crit r">10 = slow steady ไม่มี backflow, volume ถูกต้องต่อจุด</div></div></div><div class="item-bottom"><div class="score-row" id="t3b2r"></div><textarea class="comment-input" placeholder="Trainer Comment..."></textarea></div></div>
       <div class="item-card"><div class="item-top"><div class="item-num r">3B.3</div><div class="item-desc"><div class="item-title">Symmetry Technique &amp; Patient Comfort</div><div class="item-sub">ทั้งสองด้านสมมาตร จัดท่าคนไข้ถูกต้อง</div><div class="item-crit r">10 = technique สมมาตร คนไข้ comfortable</div></div></div><div class="item-bottom"><div class="score-row" id="t3b3r"></div><textarea class="comment-input" placeholder="Trainer Comment..."></textarea></div></div>
-      <div class="sub-hdr r">🅓 Sterile Technique &amp; Safety</div>
+      <div class="sub-hdr r"><span class="letter-badge">D</span>Sterile Technique &amp; Safety</div>
       <div class="item-card"><div class="item-top"><div class="item-num r">3D.1</div><div class="item-desc"><div class="item-title">Hand Hygiene, Glove &amp; Sterile Field Preparation</div><div class="item-crit r">10 = ถูกต้องตาม standard ทุกขั้นตอน</div></div></div><div class="item-bottom"><div class="score-row" id="t3d1r"></div><textarea class="comment-input" placeholder="Trainer Comment..."></textarea></div></div>
       <div class="item-card"><div class="item-top"><div class="item-num r">3D.2</div><div class="item-desc"><div class="item-title">Sharps Safety &amp; Complication First Response</div><div class="item-sub">ไม่ recap สองมือ, รู้จัก early sign + management</div><div class="item-crit r">10 = sharps safety สมบูรณ์ ระบุ complication + management ได้</div></div></div><div class="item-bottom"><div class="score-row" id="t3d2r"></div><textarea class="comment-input" placeholder="Trainer Comment..."></textarea></div></div>
-      <div class="score-card rk"><div class="prog-wrap"><div class="score-card-label">⭐ คะแนน Part 3</div><div class="prog-bar"><div class="prog-fill" id="t-p3" style="width:0%;background:var(--red)"></div></div></div><div><div class="score-card-val" id="t-v3">0</div><div class="score-card-pct" id="t-pct3">/ 70 คะแนน</div></div><div class="badge bf" id="t-b3">Re-train</div></div>
+      <div class="score-card rk"><div class="prog-wrap"><div class="score-card-label">★ คะแนน Part 3</div><div class="prog-bar"><div class="prog-fill" id="t-p3" style="width:0%;background:var(--red)"></div></div></div><div><div class="score-card-val" id="t-v3">0</div><div class="score-card-pct" id="t-pct3">/ 70 คะแนน</div></div><div class="badge bf" id="t-b3">Re-train</div></div>
     </div>
   </div>
 
   <!-- Part 4 Toxin -->
   <div class="section">
-    <div class="section-hdr green"><span>🏁</span> PART 4 · Post-Procedure &amp; Professional</div>
+    <div class="section-hdr green"><span data-ic="flag"></span> PART 4 · Post-Procedure &amp; Professional</div>
     <div class="section-body">
       <div class="part-note">Poor=1 · Fair=2 · Good=3 · Excellent=4 &nbsp;|&nbsp; เต็ม 12 คะแนน &nbsp;|&nbsp; Pass Standard ≥10 (80%) / Advance ≥10 (85%)</div>
       <div class="item-card"><div class="item-top"><div class="item-num g">4.1</div><div class="item-desc"><div class="item-title">Aftercare Instructions &amp; Onset/Duration Counseling</div><div class="item-sub">อย่านวด, หลีกเลี่ยงความร้อน, onset 3-7 วัน, peak 2 สัปดาห์</div><div class="item-crit g">Excellent = ครบทุกประเด็น อธิบาย onset/duration ถูกต้อง</div></div></div><div class="item-bottom"><div class="pfge-row" id="t41r"><div class="pfge-btn" onclick="setPFGE('t41',1,this,'t')">Poor</div><div class="pfge-btn" onclick="setPFGE('t41',2,this,'t')">Fair</div><div class="pfge-btn" onclick="setPFGE('t41',3,this,'t')">Good</div><div class="pfge-btn" onclick="setPFGE('t41',4,this,'t')">Excellent</div></div><textarea class="comment-input" placeholder="Trainer Comment..."></textarea></div></div>
@@ -758,19 +791,19 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--gray1);color:var(
 
   <!-- Part 5 Toxin -->
   <div class="section">
-    <div class="section-hdr navy"><span>🏆</span> PART 5 · ผลการประเมิน</div>
+    <div class="section-hdr navy"><span data-ic="award"></span> PART 5 · ผลการประเมิน</div>
     <div class="section-body">
-      <div id="t-result" class="result-card none"><div class="r-icon">📝</div><div class="r-label">กรอกคะแนนเพื่อดูผล</div><div class="r-desc">กรุณาให้คะแนนในทุก Part</div></div>
-      <div style="margin:14px 0 8px;font-weight:700;color:var(--navy);font-size:13px">📊 สรุปคะแนนอัตโนมัติ</div>
+      <div id="t-result" class="result-card none"><div class="r-icon"></div><div class="r-label">กรอกคะแนนเพื่อดูผล</div><div class="r-desc">กรุณาให้คะแนนในทุก Part</div></div>
+      <div style="margin:14px 0 8px;font-weight:700;color:var(--navy);font-size:13px"><span data-ic="chart"></span> สรุปคะแนนอัตโนมัติ</div>
       <div class="score-card tk" style="margin-bottom:8px"><div class="score-card-label">Part 2 — Knowledge &amp; Planning</div><div><div class="score-card-val" id="t-s2v" style="font-size:18px">0</div><div class="score-card-pct" id="t-s2d">/ 16 คะแนน</div></div><div class="badge bn" id="t-s2b">—</div></div>
-      <div class="score-card rk" style="margin-bottom:8px"><div class="score-card-label">Part 3 — Injection Technique ⭐</div><div><div class="score-card-val" id="t-s3v" style="font-size:18px">0</div><div class="score-card-pct">/ 70 คะแนน</div></div><div class="badge bn" id="t-s3b">—</div></div>
+      <div class="score-card rk" style="margin-bottom:8px"><div class="score-card-label">Part 3 — Injection Technique ★</div><div><div class="score-card-val" id="t-s3v" style="font-size:18px">0</div><div class="score-card-pct">/ 70 คะแนน</div></div><div class="badge bn" id="t-s3b">—</div></div>
       <div class="score-card gk" style="margin-bottom:16px"><div class="score-card-label">Part 4 — Post-Procedure &amp; Professional</div><div><div class="score-card-val" id="t-s4v" style="font-size:18px">0</div><div class="score-card-pct">/ 12 คะแนน</div></div><div class="badge bn" id="t-s4b">—</div></div>
-      <div style="margin-bottom:12px"><label class="field-label">✏️ Trainer Override</label><select class="override-sel" id="t-ov" onchange="calc('t')"><option value="auto">— ใช้ผลอัตโนมัติ —</option><option value="pass">✅ PASS</option><option value="cond">⚠️ CONDITIONAL PASS</option><option value="fail">🔁 RE-TRAINING REQUIRED</option></select></div>
+      <div style="margin-bottom:12px"><label class="field-label"><span data-ic="pencil"></span> Trainer Override</label><select class="override-sel" id="t-ov" onchange="calc('t')"><option value="auto">— ใช้ผลอัตโนมัติ —</option><option value="pass">PASS</option><option value="cond">CONDITIONAL PASS</option><option value="fail">RE-TRAINING REQUIRED</option></select></div>
       <div class="field-grid cols2" style="margin-bottom:12px">
-        <div><label class="field-label">💪 จุดแข็ง (Strengths)</label><textarea class="field-textarea" id="t-str" placeholder="..."></textarea></div>
-        <div><label class="field-label">📈 Areas for Improvement</label><textarea class="field-textarea" id="t-imp" placeholder="..."></textarea></div>
-        <div><label class="field-label">🎯 Action Plan</label><textarea class="field-textarea" id="t-act" placeholder="สิ่งที่ต้องทำก่อน Re-assess..."></textarea></div>
-        <div><label class="field-label">📅 วันนัด Re-assess</label><input class="field-input" id="t-ras" type="date"></div>
+        <div><label class="field-label"><span data-ic="zap"></span> จุดแข็ง (Strengths)</label><textarea class="field-textarea" id="t-str" placeholder="..."></textarea></div>
+        <div><label class="field-label"><span data-ic="trend"></span> Areas for Improvement</label><textarea class="field-textarea" id="t-imp" placeholder="..."></textarea></div>
+        <div><label class="field-label"><span data-ic="target"></span> Action Plan</label><textarea class="field-textarea" id="t-act" placeholder="สิ่งที่ต้องทำก่อน Re-assess..."></textarea></div>
+        <div><label class="field-label"><span data-ic="calendar"></span> วันนัด Re-assess</label><input class="field-input" id="t-ras" type="date"></div>
       </div>
       <div class="sig-row"><div><div class="field-label" style="margin-bottom:6px">Trainee Signature</div><div class="sig-box">ลายมือชื่อแพทย์</div></div><div><div class="field-label" style="margin-bottom:6px">Trainer Signature</div><div class="sig-box">ลายมือชื่อ Trainer</div></div></div>
       <div style="margin-top:8px;text-align:center;font-size:11px;padding:10px;background:var(--navy);border-radius:var(--radius-sm);color:rgba(255,255,255,.5)">Merz Aesthetics Assessment Form · Botulinum Toxin · TRAINER COPY</div>
@@ -782,10 +815,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--gray1);color:var(
 
 <!-- ACTION BAR (inside page-form via CSS sticky) -->
 <div class="action-bar" id="action-bar" style="display:none">
-  <button class="btn btn-c" onclick="clearForm()">🗑 Clear</button>
-  <button class="btn" style="background:var(--green);color:white;flex:1.4" onclick="saveRecord()">💾 Save</button>
-  <button class="btn btn-p" onclick="exportPDF()">📄 PDF</button>
-  <button class="btn btn-j" onclick="exportJPG()">🖼 JPG</button>
+  <button class="btn btn-c" onclick="clearForm()"><span data-ic="trash"></span> Clear</button>
+  <button class="btn" style="background:var(--green);color:white;flex:1.4" onclick="saveRecord()"><span data-ic="save"></span> Save</button>
+  <button class="btn btn-p" onclick="exportPDF()"><span data-ic="file"></span> PDF</button>
+  <button class="btn btn-j" onclick="exportJPG()"><span data-ic="image"></span> JPG</button>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -867,9 +900,9 @@ function setScore(fid, val, btn, pre) {
 // ─── BADGE ────────────────────────────────────────────────────────────────
 function badgeInfo(pct, isAdv) {
   const pp = isAdv ? 0.85 : 0.80, cp = isAdv ? 0.75 : 0.70;
-  if (pct >= pp) return ['bp','✅ Pass'];
-  if (pct >= cp) return ['bc','⚠️ Conditional'];
-  return ['bf','🔁 Re-train'];
+  if (pct >= pp) return ['bp','Pass'];
+  if (pct >= cp) return ['bc','Conditional'];
+  return ['bf','Re-train'];
 }
 function upBadge(id, pct, isAdv) {
   const el = document.getElementById(id); if (!el) return;
@@ -973,10 +1006,10 @@ function renderResult(pre, r) {
   const card=document.getElementById(pre+'-result');
   card.className='result-card';
   const map = {
-    pass: ['pass','✅','PASS','พร้อมปฏิบัติภายใต้การดูแล'],
-    cond: ['cond','⚠️','CONDITIONAL PASS','ต้องพัฒนาในจุดที่ยังไม่ถึงเกณฑ์ Pass ก่อนปฏิบัติ'],
-    fail: ['fail','🔁','RE-TRAINING REQUIRED','ยังไม่พร้อมปฏิบัติอย่างปลอดภัย ต้องเทรนซ้ำ'],
-    none: ['none','📝','กรอกคะแนนเพื่อดูผล','กรุณาให้คะแนนในทุก Part เพื่อคำนวณผลอัตโนมัติ']
+    pass: ['pass',svg('check'),'PASS','พร้อมปฏิบัติภายใต้การดูแล'],
+    cond: ['cond',svg('alert'),'CONDITIONAL PASS','ต้องพัฒนาในจุดที่ยังไม่ถึงเกณฑ์ Pass ก่อนปฏิบัติ'],
+    fail: ['fail',svg('refresh'),'RE-TRAINING REQUIRED','ยังไม่พร้อมปฏิบัติอย่างปลอดภัย ต้องเทรนซ้ำ'],
+    none: ['none',svg('note'),'กรอกคะแนนเพื่อดูผล','กรุณาให้คะแนนในทุก Part เพื่อคำนวณผลอัตโนมัติ']
   };
   const [cls,ic,lb,ds] = map[r]||map.none;
   card.classList.add(cls);
@@ -995,7 +1028,7 @@ function clearForm() {
   document.querySelectorAll('#panel-'+(pre==='f'?'filler':'toxin')+' .score-btn').forEach(b=>b.classList.remove('sel'));
   document.querySelectorAll('#panel-'+(pre==='f'?'filler':'toxin')+' input, #panel-'+(pre==='f'?'filler':'toxin')+' textarea').forEach(el=>el.value='');
   document.querySelectorAll('#panel-'+(pre==='f'?'filler':'toxin')+' select').forEach(el=>el.selectedIndex=0);
-  calc(pre); toast('🗑 ล้างข้อมูลแล้ว');
+  calc(pre); toast('ล้างข้อมูลแล้ว');
 }
 
 // ─── EXPORT: open summary then print/capture ──────────────────────────────
@@ -1040,7 +1073,7 @@ function buildSummaryCard(pre) {
   const improve = g(pre+'-imp') || '—';
   const action  = g(pre+'-act') || '—';
 
-  document.getElementById('sc-form-tag').textContent = isFiller ? '💉 Filler & Biostimulator Assessment' : '🧬 Botulinum Toxin Assessment';
+  document.getElementById('sc-form-tag').textContent = isFiller ? 'Filler & Biostimulator Assessment' : 'Botulinum Toxin Assessment';
   document.getElementById('sc-trainee').textContent  = trainee;
   document.getElementById('sc-clinic').textContent   = clinic;
   document.getElementById('sc-lic').textContent      = lic;
@@ -1053,9 +1086,9 @@ function buildSummaryCard(pre) {
   // Pills
   const pillsEl = document.getElementById('sc-pills');
   const lvlCls  = isAdv ? 'lvl-adv' : 'lvl-std';
-  let pillsHTML  = `<div class="sc-pill ${lvlCls}">${isAdv ? '🟣 Advance' : '🔵 Standard'}</div>`;
+  let pillsHTML  = `<div class="sc-pill ${lvlCls}">${isAdv ? 'Advance' : 'Standard'}</div>`;
   if (isFiller) {
-    const techMap = {N:'💉 Needle Only', C:'🔸 Cannula Only', NC:'💉🔸 Needle + Cannula'};
+    const techMap = {N:'Needle Only', C:'Cannula Only', NC:'Needle + Cannula'};
     pillsHTML += `<div class="sc-pill tch">${techMap[f.tech] || f.tech}</div>`;
   }
   pillsEl.innerHTML = pillsHTML;
@@ -1112,9 +1145,9 @@ function buildSummaryCard(pre) {
   function badgeTxt(pct, thr) {
     const pp = isAdv ? '≥85%' : '≥80%';
     const cp = isAdv ? '75–84%' : '70–79%';
-    if (pct >= thr[0]) return `✅ Pass (${pp})`;
-    if (pct >= thr[1]) return `⚠️ Conditional (${cp})`;
-    return `🔁 Re-train`;
+    if (pct >= thr[0]) return `Pass (${pp})`;
+    if (pct >= thr[1]) return `Conditional (${cp})`;
+    return `Re-train`;
   }
 
   // ─── Item name dictionaries ────────────────────────────────────────────────
@@ -1183,7 +1216,7 @@ function buildSummaryCard(pre) {
     <div class="sc-items-row">${p2ChipsHTML}</div>
 
     <div class="sc-part-row">
-      <div class="sc-part-label red">P3 ⭐</div>
+      <div class="sc-part-label red">P3 ★</div>
       <div class="sc-part-content">
         <div class="sc-part-title">Injection Technique <span style="font-size:10px;color:var(--red);font-weight:600">Critical Gate · ${p3Keys.length} items × 10</span></div>
         <div class="sc-prog-row">
@@ -1234,13 +1267,13 @@ function buildSummaryCard(pre) {
   const rDesc = document.getElementById('sc-result-desc');
   rBox.className = 'sc-result ' + (finalR||'none');
   const resMap = {
-    pass:['✅','PASS','พร้อมปฏิบัติภายใต้การดูแล'],
-    cond:['⚠️','CONDITIONAL PASS','ต้องพัฒนาในจุดที่ยังไม่ถึงเกณฑ์ Pass ก่อนปฏิบัติ'],
-    fail:['🔁','RE-TRAINING REQUIRED','ยังไม่พร้อมปฏิบัติอย่างปลอดภัย ต้องเทรนซ้ำ'],
-    none:['📝','กรอกคะแนนเพื่อดูผล','กรุณาให้คะแนนในทุก Part']
+    pass:[svg('check'),'PASS','พร้อมปฏิบัติภายใต้การดูแล'],
+    cond:[svg('alert'),'CONDITIONAL PASS','ต้องพัฒนาในจุดที่ยังไม่ถึงเกณฑ์ Pass ก่อนปฏิบัติ'],
+    fail:[svg('refresh'),'RE-TRAINING REQUIRED','ยังไม่พร้อมปฏิบัติอย่างปลอดภัย ต้องเทรนซ้ำ'],
+    none:[svg('note'),'กรอกคะแนนเพื่อดูผล','กรุณาให้คะแนนในทุก Part']
   };
   const [ic,lb,ds] = resMap[finalR]||resMap.none;
-  rIcon.textContent=ic; rLbl.textContent=lb; rDesc.textContent=ds;
+  rIcon.innerHTML=ic; rLbl.textContent=lb; rDesc.textContent=ds;
 
   // ─── Comments ─────────────────────────────────────────────────────────────
   const commentsEl = document.getElementById('sc-comments');
@@ -1250,10 +1283,10 @@ function buildSummaryCard(pre) {
       <div class="sc-comment-text">${text||'—'}</div>
     </div>`;
   commentsEl.innerHTML =
-    mkBox('จุดแข็ง (Strengths)', (document.getElementById(pre+'-str')||{value:''}).value, '💪') +
-    mkBox('ประเด็นที่ควรพัฒนา', (document.getElementById(pre+'-imp')||{value:''}).value, '📈') +
-    mkBox('Action Plan', (document.getElementById(pre+'-act')||{value:''}).value, '🎯') +
-    (rasStr!=='—' ? mkBox('วันนัด Re-assess', rasStr, '📅') : '');
+    mkBox('จุดแข็ง (Strengths)', (document.getElementById(pre+'-str')||{value:''}).value, svg('zap')) +
+    mkBox('ประเด็นที่ควรพัฒนา', (document.getElementById(pre+'-imp')||{value:''}).value, svg('trend')) +
+    mkBox('Action Plan', (document.getElementById(pre+'-act')||{value:''}).value, svg('target')) +
+    (rasStr!=='—' ? mkBox('วันนัด Re-assess', rasStr, svg('calendar')) : '');
 }
 
 // ─── Print summary as PDF ──────────────────────────────────────────────────
@@ -1321,7 +1354,48 @@ function toast(msg) {
   setTimeout(()=>t.classList.remove('show'), 2800);
 }
 
+// ─── SVG LINE ICONS (แทน emoji) ─────────────────────────────────────────────
+const ICONS = {
+  droplet:'<path d="M12 2.7s6.5 6.1 6.5 10.5a6.5 6.5 0 1 1-13 0C5.5 8.8 12 2.7 12 2.7z"/>',
+  flask:'<path d="M9 3h6"/><path d="M10 3v6l-5.2 8.3A2 2 0 0 0 6.5 21h11a2 2 0 0 0 1.7-3.1L14 9V3"/><path d="M7 15h10"/>',
+  alert:'<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  check:'<circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.5 2.5 4.5-5"/>',
+  refresh:'<path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v5h-5"/>',
+  star:'<path d="M12 3l2.7 5.5 6 .9-4.35 4.2 1 6-5.35-2.8-5.35 2.8 1-6L3.3 9.4l6-.9z"/>',
+  note:'<path d="M4 4h11l5 5v11a0 0 0 0 1 0 0H4z"/><path d="M14 4v5h5"/><path d="M8 13h8"/><path d="M8 17h6"/>',
+  pencil:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  calendar:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18"/><path d="M8 2v4M16 2v4"/>',
+  hospital:'<path d="M4 21V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v15"/><path d="M2 21h20"/><path d="M12 7v6M9 10h6"/>',
+  save:'<path d="M5 3h11l3 3v15H5z"/><path d="M8 3v5h7"/><path d="M8 21v-6h8v6"/>',
+  clipboard:'<rect x="7" y="4" width="10" height="17" rx="2"/><path d="M9 4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2"/><path d="M9 11h6M9 15h4"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 7 19.4l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 3 12a2 2 0 1 1 0-4 1.6 1.6 0 0 0 1.1-2.7L4 5.2A2 2 0 1 1 6.8 2.4l.1.1A1.6 1.6 0 0 0 9 2.6H9A2 2 0 1 1 13 2.6v.1A1.6 1.6 0 0 0 15.7 4l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1A1.6 1.6 0 0 0 21 9h.1A2 2 0 1 1 21 13h-.1A1.6 1.6 0 0 0 19.4 15z"/>',
+  bulb:'<path d="M9 18h6"/><path d="M10 22h4"/><path d="M8.5 15a6 6 0 1 1 7 0c-.6.4-1 1-1 1.7V17H9.5v-.3c0-.7-.4-1.3-1-1.7z"/>',
+  flag:'<path d="M5 21V4"/><path d="M5 4h11l-1.5 3L16 10H5"/>',
+  award:'<circle cx="12" cy="9" r="6"/><path d="M9 14.5 7.5 22 12 19.5 16.5 22 15 14.5"/>',
+  chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  file:'<path d="M6 2h8l4 4v16H6z"/><path d="M14 2v4h4"/><path d="M9 13h6M9 17h6"/>',
+  image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.6"/><path d="m21 16-5-5L5 21"/>',
+  plus:'<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',
+  folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+  medical:'<path d="M11 2h2v6h6v2h-6v6h-2v-6H5V8h6z"/>',
+  close:'<path d="M6 6l12 12M18 6 6 18"/>',
+  trash:'<path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 14h10l1-14"/><path d="M10 11v6M14 11v6"/>',
+  zap:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+  trend:'<path d="M3 17 9 11l4 4 8-8"/><path d="M15 7h6v6"/>',
+  target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>',
+  arrowright:'<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>',
+  arrowleft:'<path d="M19 12H5"/><path d="m11 6-6 6 6 6"/>',
+};
+function svg(name, cls) {
+  return `<svg class="ic${cls ? ' ' + cls : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ''}</svg>`;
+}
+function hydrateIcons(root) {
+  (root || document).querySelectorAll('[data-ic]').forEach((el) => { el.innerHTML = svg(el.dataset.ic); });
+}
+
 // ─── INIT ─────────────────────────────────────────────────────────────────
+hydrateIcons(); // แทน [data-ic] ทั้งหน้าด้วย SVG
 document.getElementById('f-adv').style.opacity = '0.35';
 document.getElementById('t-adv').style.opacity = '0.35';
 calcF(); calcT();
@@ -1338,7 +1412,7 @@ function gotoAssessment(form) {
   const isF = form === 'filler';
   tabBtns.forEach((b,i) => b.classList.toggle('active', i===(isF?0:1)));
   document.querySelectorAll('.form-panel').forEach((p,i) => p.classList.toggle('active', i===(isF?0:1)));
-  const title = isF ? '💉 Filler & Biostimulator' : '🧬 Botulinum Toxin';
+  const title = isF ? 'Filler & Biostimulator' : 'Botulinum Toxin';
   document.getElementById('form-topbar-title').textContent = title;
   // Start new form
   currentRecordId = null;
@@ -1420,10 +1494,10 @@ async function pullRecords() {
     dbSave(mergeRecords(dbLoad(), j.records || []));
     renderRecords();
     updateStats();
-  } catch (e) { toast('⚠️ sync ไม่สำเร็จ: ' + e.message); }
+  } catch (e) { toast('sync ไม่สำเร็จ: ' + e.message); }
 }
-function pushRecord(rec) { if (API_URL) apiPost('save', { record: rec }).catch((e) => toast('⚠️ ยังไม่ sync ขึ้น server: ' + e.message)); }
-function pushDelete(id)  { if (API_URL) apiPost('delete', { id }).catch((e) => toast('⚠️ ยังไม่ sync ขึ้น server: ' + e.message)); }
+function pushRecord(rec) { if (API_URL) apiPost('save', { record: rec }).catch((e) => toast('ยังไม่ sync ขึ้น server: ' + e.message)); }
+function pushDelete(id)  { if (API_URL) apiPost('delete', { id }).catch((e) => toast('ยังไม่ sync ขึ้น server: ' + e.message)); }
 
 // Capture all field values for current active form
 function captureFormData(pre) {
@@ -1509,7 +1583,7 @@ function saveRecord() {
   const clinic = (data.fields[pre+'-clinic'] || '').trim();
   const trainee = (data.fields[pre+'-name'] || '').trim();
   if (!clinic && !trainee) {
-    toast('⚠️ กรุณากรอก Clinic / Hospital หรือ Trainee Name ก่อนบันทึก');
+    toast('กรุณากรอก Clinic / Hospital หรือ Trainee Name ก่อนบันทึก');
     return;
   }
   const records = dbLoad();
@@ -1520,7 +1594,7 @@ function saveRecord() {
       records[idx] = { ...records[idx], ...data, updatedAt: new Date().toISOString() };
       dbSave(records);
       pushRecord(records[idx]);
-      toast('✅ อัปเดตข้อมูลสำเร็จ');
+      toast('อัปเดตข้อมูลสำเร็จ');
     } else {
       currentRecordId = null; // not found, create new
     }
@@ -1531,7 +1605,7 @@ function saveRecord() {
     currentRecordId = newRec.id;
     dbSave(records);
     pushRecord(newRec);
-    toast('✅ บันทึกข้อมูลสำเร็จ! (' + (clinic||trainee) + ')');
+    toast('บันทึกข้อมูลสำเร็จ! (' + (clinic||trainee) + ')');
   }
   renderRecords();
   updateStats();
@@ -1548,7 +1622,7 @@ function loadRecord(id) {
     restoreFormData(rec);
     const nameKey = rec.form === 'filler' ? 'f-name' : 't-name';
     const nm = (rec.fields && rec.fields[nameKey]) || 'ไม่ระบุชื่อ';
-    toast('📂 โหลดข้อมูล: ' + nm);
+    toast('โหลดข้อมูล: ' + nm);
   }, 150);
 }
 
@@ -1560,7 +1634,7 @@ function deleteRecord(id, evt) {
   pushDelete(id);
   if (currentRecordId === id) { currentRecordId = null; }
   renderRecords();
-  toast('🗑 ลบข้อมูลแล้ว');
+  toast('ลบข้อมูลแล้ว');
 }
 
 function setFilter(f, el) {
@@ -1596,7 +1670,7 @@ function renderRecords() {
   if (!list) return;
 
   if (records.length === 0) {
-    list.innerHTML = '<div class="empty-state">ไม่พบข้อมูล<br><small>' + (qClinic||qTrainee ? 'ลองเปลี่ยนคำค้นหา' : 'กดปุ่ม 💾 Save เพื่อบันทึกข้อมูลใหม่') + '</small></div>';
+    list.innerHTML = '<div class="empty-state">ไม่พบข้อมูล<br><small>' + (qClinic||qTrainee ? 'ลองเปลี่ยนคำค้นหา' : 'กดปุ่ม Save เพื่อบันทึกข้อมูลใหม่') + '</small></div>';
     return;
   }
 
@@ -1610,7 +1684,7 @@ function renderRecords() {
 
   let html = '';
   Object.entries(grouped).forEach(([clinic, recs]) => {
-    html += `<div style="padding:8px 14px 4px;background:var(--gray1);font-size:10px;font-weight:700;color:var(--gray4);text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--gray2)">🏥 ${escHtml(clinic)} (${recs.length})</div>`;
+    html += `<div style="padding:8px 14px 4px;background:var(--gray1);font-size:10px;font-weight:700;color:var(--gray4);text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--gray2)">${svg('hospital')} ${escHtml(clinic)} (${recs.length})</div>`;
     recs.forEach(r => {
       const pre = r.form === 'filler' ? 'f' : 't';
       const trainee = ((r.fields && r.fields[pre+'-name']) || '— ไม่ระบุชื่อ —').trim();
@@ -1619,7 +1693,7 @@ function renderRecords() {
       const dateStr = date ? new Date(date).toLocaleDateString('th-TH',{day:'2-digit',month:'short',year:'numeric'}) : '';
       const isActive = r.id === currentRecordId;
       const badgeCls = r.form === 'filler' ? '' : 'tox';
-      const badgeTxt = r.form === 'filler' ? '💉 Filler' : '🧬 Toxin';
+      const badgeTxt = r.form === 'filler' ? svg('droplet')+' Filler' : svg('flask')+' Toxin';
       html += `<div class="record-item${isActive?' active-rec':''}" data-id="${r.id}" onclick="loadRecord('${r.id}')">
         <div style="flex:1;min-width:0">
           <div class="rec-trainee">${escHtml(trainee)}</div>
@@ -1676,13 +1750,13 @@ if ('serviceWorker' in navigator) {
         <div class="sc-form-tag" id="sc-form-tag">Assessment Summary</div>
         <div class="sc-trainee" id="sc-trainee">—</div>
         <div class="sc-meta-row">
-          <div class="sc-meta-item">🏥 <span id="sc-clinic">—</span></div>
-          <div class="sc-meta-item">⚕️ <span id="sc-lic">—</span></div>
-          <div class="sc-meta-item">📅 <span id="sc-date">—</span></div>
-          <div class="sc-meta-item">👤 <span id="sc-trainer">—</span></div>
+          <div class="sc-meta-item"><span data-ic="hospital"></span> <span id="sc-clinic">—</span></div>
+          <div class="sc-meta-item"><span data-ic="medical"></span> <span id="sc-lic">—</span></div>
+          <div class="sc-meta-item"><span data-ic="calendar"></span> <span id="sc-date">—</span></div>
+          <div class="sc-meta-item"><span data-ic="user"></span> <span id="sc-trainer">—</span></div>
         </div>
         <div class="sc-meta-row" style="margin-top:6px">
-          <div class="sc-meta-item">📋 <span id="sc-topic">—</span></div>
+          <div class="sc-meta-item"><span data-ic="clipboard"></span> <span id="sc-topic">—</span></div>
         </div>
         <div class="sc-pills" id="sc-pills"></div>
       </div>
@@ -1697,7 +1771,7 @@ if ('serviceWorker' in navigator) {
 
       <!-- Final Result -->
       <div class="sc-result none" id="sc-result-box">
-        <div class="sc-result-icon" id="sc-result-icon">📝</div>
+        <div class="sc-result-icon" id="sc-result-icon"></div>
         <div class="sc-result-label" id="sc-result-label">กรอกคะแนนเพื่อดูผล</div>
         <div class="sc-result-desc" id="sc-result-desc">กรุณาให้คะแนนในทุก Part</div>
       </div>
@@ -1725,9 +1799,9 @@ if ('serviceWorker' in navigator) {
 
     <!-- Action buttons (hidden in print) -->
     <div class="sc-actions">
-      <button class="sc-act-btn close-btn" onclick="closeSummary()">✕ ปิด</button>
-      <button class="sc-act-btn pdf-btn" onclick="printSummaryPDF()">📄 บันทึก PDF</button>
-      <button class="sc-act-btn jpg-btn" onclick="exportSummaryJPG()">🖼 บันทึก JPG</button>
+      <button class="sc-act-btn close-btn" onclick="closeSummary()"><span data-ic="close"></span> ปิด</button>
+      <button class="sc-act-btn pdf-btn" onclick="printSummaryPDF()"><span data-ic="file"></span> บันทึก PDF</button>
+      <button class="sc-act-btn jpg-btn" onclick="exportSummaryJPG()"><span data-ic="image"></span> บันทึก JPG</button>
     </div>
 
   </div>
