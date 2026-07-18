@@ -697,7 +697,6 @@ document.addEventListener('DOMContentLoaded', function(){
       $('action-bar').style.display='block';
       showPanel(form==='filler');
       window.scrollTo(0,0);
-      currentRecordId=null;
       calc(form==='filler'?'f':'t');
       setLocked(false);
     }
@@ -979,7 +978,7 @@ document.addEventListener('DOMContentLoaded', function(){
       const el=e.target.closest('[data-action]'); if(!el)return;
       const a=el.dataset.action;
       switch(a){
-        case 'new': gotoAssessment(el.dataset.form); break;
+        case 'new': currentRecordId=null; gotoAssessment(el.dataset.form); break;
         case 'back': gotoDashboard(); break;
         case 'level': setLevel(el.dataset.pre,el.dataset.v); break;
         case 'tech': setTech(el.dataset.v); break;
