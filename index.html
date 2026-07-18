@@ -89,8 +89,10 @@ input,button,textarea,select{font-family:inherit}
 .sc-footer{border-top:1px solid #EDF1F5;padding:9px 22px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#F6F8FA}
 .sc-sig-col{flex:1;text-align:center}
 .sc-sig-label{font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#9AA7B4;margin-bottom:14px}
-.sc-sig-pad{height:46px;margin:0 10px;border-bottom:1.5px solid #CBD5DF;touch-action:none;cursor:crosshair;display:block}
-.sc-sig-clear{font-size:8px;color:#B0BAC4;cursor:pointer;margin-top:3px;user-select:none}
+.sc-sig-line{border-top:1.5px solid #CBD5DF;margin:0 10px}
+.sc-sig-img{display:block;height:44px;width:auto;max-width:calc(100% - 20px);margin:0 auto -2px;object-fit:contain}
+.sig-pad{width:100%;box-sizing:border-box;height:74px;border:1.5px dashed #CBD5DF;border-radius:10px;background:#fff;touch-action:none;cursor:crosshair;display:block}
+.sig-clear{font-size:10px;color:#B0BAC4;cursor:pointer;margin-top:5px;user-select:none;display:inline-block}
 .sc-reassess{font-size:10px;color:#9AA7B4;text-align:center;flex:1}.sc-reassess strong{color:#D4890A;font-size:11px;display:block;margin-top:2px}
 .sc-actions{display:flex;gap:8px;padding:12px 22px;background:#fff;border-top:1px solid #EDF1F5}
 .sc-act-btn{flex:1;padding:11px;border-radius:10px;border:none;cursor:pointer;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px}
@@ -268,9 +270,9 @@ input,button,textarea,select{font-family:inherit}
       <div class="sc-comments" id="sc-comments"></div>
     </div>
     <div class="sc-footer">
-      <div class="sc-sig-col"><div class="sc-sig-label">Trainee Signature</div><canvas class="sc-sig-pad"></canvas><div class="sc-sig-clear">ล้าง</div></div>
+      <div class="sc-sig-col"><div class="sc-sig-label">Trainee Signature</div><img class="sc-sig-img" id="sc-sig-trainee" alt=""><div class="sc-sig-line"></div></div>
       <div class="sc-reassess"><span style="font-size:8.5px;text-transform:uppercase;letter-spacing:.06em">วันนัด Re-assess</span><strong id="sc-reassess-date">—</strong></div>
-      <div class="sc-sig-col"><div class="sc-sig-label">Trainer Signature</div><canvas class="sc-sig-pad"></canvas><div class="sc-sig-clear">ล้าง</div></div>
+      <div class="sc-sig-col"><div class="sc-sig-label">Trainer Signature</div><img class="sc-sig-img" id="sc-sig-trainer" alt=""><div class="sc-sig-line"></div></div>
     </div>
     <div class="sc-actions">
       <button class="sc-act-btn close-btn" data-action="close-summary">ปิด</button>
@@ -385,6 +387,7 @@ document.addEventListener('DOMContentLoaded', function(){
     // ── build a form panel ──
     function buildPanel(pre){
       const d = D[pre], isF = pre==='f';
+      const chev=svg('<path d="m6 9 6 6 6-6"/>',16);
       const P0 = card(secHead(ic.clip,C.navy2,'ข้อมูล Workshop &amp; แพทย์','Workshop & Trainee Info')+
         `<div class="grid2">${
           fieldRow(pre+'-ws','Training Topic','หัวข้อการเทรน')+
@@ -425,7 +428,7 @@ document.addEventListener('DOMContentLoaded', function(){
         noteBox('Poor=1 · Fair=2 · Good=3 · Excellent=4 &nbsp;|&nbsp; Standard เต็ม 16 / Advance เต็ม 24 &nbsp;|&nbsp; Pass Std ≥13 (80%) / Adv ≥20 (85%)')+
         p2items+
         scoreSummary(pre,2,C.sky,'#EAF3FC',pre+'-s2-lbl','คะแนน Part 2 (Standard)',pre+'-p2',pre+'-v2',pre+'-pct2',pre+'-b2')+
-        `<div id="${pre}-adv" style="margin-top:14px;opacity:.35"><div style="background:${C.purple};color:#fff;border-radius:9px;padding:9px 13px;font-size:12px;font-weight:600;margin-bottom:11px;display:flex;align-items:center;gap:7px">${svg(ic.star,15)} ADVANCE ONLY — ข้ามได้ถ้าเลือก Standard</div>${p2adv}</div>`);
+        `<div id="${pre}-adv" class="tech-grp collapsed" style="margin-top:14px"><button class="grp-head" data-action="toggle-grp" data-grp="${pre}-adv" style="padding:0 0 11px"><span style="flex:1;background:${C.purple};color:#fff;border-radius:9px;padding:9px 13px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:7px">${svg(ic.star,15)} ADVANCE ONLY — ข้ามได้ถ้าเลือก Standard<span class="grp-chev" style="color:#fff;margin-left:auto">${chev}</span></span></button><div class="grp-body" id="${pre}-adv-body">${p2adv}</div></div>`);
 
       // Part 3
       const A = d.A.map(r=>scoreItem(pre+r[0].replace(/\./g,'').toLowerCase(),r[0],r[1],r[2],r[3])).join('');
@@ -434,7 +437,6 @@ document.addEventListener('DOMContentLoaded', function(){
       let p3body = subHead('A','Landmark &amp; Safety Marking')+A;
       if(isF){
         const Cn = d.Cn.map(r=>scoreItem(pre+r[0].replace(/\./g,'').toLowerCase(),r[0],r[1],r[2],r[3])).join('');
-        const chev=svg('<path d="m6 9 6 6 6-6"/>',16);
         const techGroup=(id,letter,label,items)=>`<div id="${id}" class="tech-grp"><button class="grp-head" data-action="toggle-grp" data-grp="${id}"><span class="grp-letter">${letter}</span><span class="grp-label">${label}</span><span class="grp-note" id="${id}-note"></span><span class="grp-chev">${chev}</span></button><div class="grp-body" id="${id}-body">${items}</div></div>`;
         p3body += techGroup('f-3b','B','Needle Technique',B)+techGroup('f-3c','C','Cannula Technique',Cn);
       } else {
@@ -469,8 +471,8 @@ document.addEventListener('DOMContentLoaded', function(){
           ${fieldRow(pre+'-ras','วันนัด Re-assess','','date')}
         </div>
         <div class="grid2">
-          <div><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:${C.mute};margin-bottom:8px">Trainee Signature</div><div style="border:1.5px dashed ${C.line};border-radius:10px;min-height:64px;display:flex;align-items:flex-end;justify-content:center;padding:10px;font-size:11px;color:#B0BAC4">ลายมือชื่อแพทย์</div></div>
-          <div><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:${C.mute};margin-bottom:8px">Trainer Signature</div><div style="border:1.5px dashed ${C.line};border-radius:10px;min-height:64px;display:flex;align-items:flex-end;justify-content:center;padding:10px;font-size:11px;color:#B0BAC4">ลายมือชื่อ Trainer</div></div>
+          <div><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:${C.mute};margin-bottom:8px">Trainee Signature <span style="font-weight:400;text-transform:none;color:#B0BAC4">— แตะเพื่อเซ็น</span></div><canvas class="sig-pad" id="${pre}-sig-trainee" data-pre="${pre}" data-sig="trainee"></canvas><div class="sig-clear" data-clearsig="${pre}-sig-trainee">ล้างลายเซ็น</div></div>
+          <div><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:${C.mute};margin-bottom:8px">Trainer Signature <span style="font-weight:400;text-transform:none;color:#B0BAC4">— แตะเพื่อเซ็น</span></div><canvas class="sig-pad" id="${pre}-sig-trainer" data-pre="${pre}" data-sig="trainer"></canvas><div class="sig-clear" data-clearsig="${pre}-sig-trainer">ล้างลายเซ็น</div></div>
         </div>
         <div style="margin-top:14px;text-align:center;font-size:11px;padding:10px;background:${C.navy};border-radius:9px;color:rgba(255,255,255,.5)">Merz Aesthetics Assessment Form · ${formTag} · TRAINER COPY</div>`);
 
@@ -499,7 +501,7 @@ document.addEventListener('DOMContentLoaded', function(){
         b.style.background=on?(val==='Advance'?C.purple:C.navy2):'transparent';
         b.style.color=on?'#fff':C.mute;
       });
-      const adv=$(pre+'-adv'); if(adv) adv.style.opacity=val==='Advance'?'1':'0.35';
+      const adv=$(pre+'-adv'); if(adv) adv.classList.toggle('collapsed',val!=='Advance');
       calc(pre);
     }
     function setGrpExcluded(id,excluded){
@@ -718,6 +720,7 @@ document.addEventListener('DOMContentLoaded', function(){
       showPanel(form==='filler');
       window.scrollTo(0,0);
       calc(form==='filler'?'f':'t');
+      initSigPads();
       setLocked(false);
     }
     function gotoDashboard(){
@@ -788,6 +791,7 @@ document.addEventListener('DOMContentLoaded', function(){
       });
       if(rec.comments&&!Array.isArray(rec.comments)){ const comms=document.querySelectorAll('#panel-'+panel+' .comment-input'); comms.forEach(el=>{ if(rec.comments[el.dataset.fid]!=null) el.value=rec.comments[el.dataset.fid]; }); }
       if(rec.override){ const ov=$(pre+'-ov'); if(ov)ov.value=rec.override; }
+      restoreSigs(pre);
       calc(pre);
     }
     function saveRecord(){
@@ -878,22 +882,31 @@ document.addEventListener('DOMContentLoaded', function(){
       ctx.lineWidth=1.8; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.strokeStyle='#1A2A3A';
     }
     function initSigPads(){
-      document.querySelectorAll('#summary-card .sc-sig-pad').forEach(cv=>{
+      document.querySelectorAll('.sig-pad').forEach(cv=>{
         fitSig(cv);
         if(cv._init) return; cv._init=true;
-        const ctx=cv.getContext('2d'); let drawing=false;
+        const ctx=cv.getContext('2d'), pre=cv.dataset.pre, key=cv.dataset.sig; let drawing=false;
         const at=e=>{const r=cv.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top];};
+        const store=()=>{ (S[pre].sig=S[pre].sig||{})[key]=cv.toDataURL('image/png'); };
         cv.addEventListener('pointerdown',e=>{drawing=true;cv.setPointerCapture(e.pointerId);const[x,y]=at(e);ctx.beginPath();ctx.moveTo(x,y);e.preventDefault();});
         cv.addEventListener('pointermove',e=>{if(!drawing)return;const[x,y]=at(e);ctx.lineTo(x,y);ctx.stroke();e.preventDefault();});
-        cv.addEventListener('pointerup',()=>drawing=false); cv.addEventListener('pointercancel',()=>drawing=false);
+        cv.addEventListener('pointerup',()=>{if(drawing){drawing=false;store();}}); cv.addEventListener('pointercancel',()=>drawing=false);
       });
-      document.querySelectorAll('#summary-card .sc-sig-clear').forEach(b=>{
+      document.querySelectorAll('.sig-clear').forEach(b=>{
         if(b._init) return; b._init=true;
-        b.addEventListener('click',()=>{const cv=b.parentElement.querySelector('.sc-sig-pad');cv.getContext('2d').clearRect(0,0,cv.width,cv.height);});
+        b.addEventListener('click',()=>{ const cv=document.getElementById(b.dataset.clearsig); if(!cv)return; cv.getContext('2d').clearRect(0,0,cv.width,cv.height); const pre=cv.dataset.pre; if(S[pre].sig) delete S[pre].sig[cv.dataset.sig]; });
       });
     }
-    window.addEventListener('resize',()=>document.querySelectorAll('#summary-card .sc-sig-pad').forEach(fitSig));
-    function openSummary(){ buildSummaryCard(activeForm()); $('summary-overlay').classList.add('open'); document.body.style.overflow='hidden'; initSigPads(); }
+    // วาดลายเซ็นที่เก็บไว้กลับลง canvas ตอนโหลด record
+    function restoreSigs(pre){
+      const sig=(S[pre]||{}).sig; if(!sig) return;
+      document.querySelectorAll('#panel-'+(pre==='f'?'filler':'toxin')+' .sig-pad').forEach(cv=>{
+        fitSig(cv); const src=sig[cv.dataset.sig]; if(!src) return;
+        const img=new Image(); img.onload=()=>cv.getContext('2d').drawImage(img,0,0,cv.offsetWidth,cv.offsetHeight); img.src=src;
+      });
+    }
+    window.addEventListener('resize',()=>document.querySelectorAll('.sig-pad').forEach(fitSig));
+    function openSummary(){ buildSummaryCard(activeForm()); $('summary-overlay').classList.add('open'); document.body.style.overflow='hidden'; }
     function closeSummary(){ $('summary-overlay').classList.remove('open'); document.body.style.overflow=''; }
     function buildSummaryCard(pre){
       const isF=pre==='f', f=S[pre], isAdv=f.level==='Advance', gs=k=>f.scores[k]!=null?f.scores[k]:null;
@@ -953,6 +966,8 @@ document.addEventListener('DOMContentLoaded', function(){
       $('sc-result-label').textContent=rm[0]; $('sc-result-desc').textContent=rm[1];
       const mkBox=(l,t)=>`<div class="sc-comment-box"><div class="sc-comment-label">${l}</div><div class="sc-comment-text">${esc(t||'—')}</div></div>`;
       $('sc-comments').innerHTML=mkBox('จุดแข็ง (Strengths)',g(pre+'-str'))+mkBox('ประเด็นที่ควรพัฒนา',g(pre+'-imp'))+mkBox('Action Plan',g(pre+'-act'))+(rasStr!=='—'?mkBox('วันนัด Re-assess',rasStr):'');
+      const sig=(S[pre]||{}).sig||{};
+      [['sc-sig-trainee',sig.trainee],['sc-sig-trainer',sig.trainer]].forEach(([id,src])=>{ const im=$(id); if(!im)return; if(src){im.src=src;im.style.display='';}else{im.removeAttribute('src');im.style.display='none';} });
     }
     let _whiteLogo=null;
     function whiteLogoDataURL(){
@@ -968,7 +983,6 @@ document.addEventListener('DOMContentLoaded', function(){
     function pdfClone(doc){
       const l=doc.querySelector('#summary-card .sc-logo'), wl=whiteLogoDataURL(); if(l&&wl){ l.src=wl; l.style.filter='none'; }
       const ac=doc.querySelector('#summary-card .sc-actions'); if(ac)ac.style.display='none';
-      doc.querySelectorAll('#summary-card .sc-sig-clear').forEach(x=>x.style.display='none');
     }
     function printSummaryPDF(){
       const card=$('summary-card'), portal=$('print-summary-portal'); if(!card||!portal) return;
