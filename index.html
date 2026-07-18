@@ -111,6 +111,9 @@ input,button,textarea,select{font-family:inherit}
 .sheet-cancel{width:100%;padding:13px;border-radius:14px;background:#EEF2F6;color:#5A6B7B;border:none;font-size:14px;font-weight:700;cursor:pointer;margin-top:3px}
 /* locked form: กันแตะแก้ข้อมูลหลังบันทึก */
 #panel-filler.locked,#panel-toxin.locked{pointer-events:none;opacity:.92}
+/* hint บอกวิธีปลดล็อกกลุ่มเทคนิคที่ถูกหรี่ (Needle/Cannula ตามที่เลือก) */
+.tech-hint{display:none;width:100%;align-items:center;justify-content:center;gap:7px;background:#FBEFD9;color:#B5730A;border:1px solid #F0D9A8;border-radius:10px;padding:10px 12px;font-size:11.5px;font-weight:600;cursor:pointer;margin:2px 0 11px;text-align:center;font-family:inherit;line-height:1.4}
+.tech-hint:active{background:#F6E4C0}
 @media(max-width:560px){
   .sc-comments{grid-template-columns:1fr}
   .sc-header{flex-direction:column;gap:9px}      /* มือถือ: ข้อมูลลงมาใต้ logo เต็มความกว้าง ไม่เบียด */
@@ -421,7 +424,8 @@ document.addEventListener('DOMContentLoaded', function(){
       let p3body = subHead('A','Landmark &amp; Safety Marking')+A;
       if(isF){
         const Cn = d.Cn.map(r=>scoreItem(pre+r[0].replace(/\./g,'').toLowerCase(),r[0],r[1],r[2],r[3])).join('');
-        p3body += `<div id="f-3b">${subHead('B','Needle Technique')}${B}</div><div id="f-3c">${subHead('C','Cannula Technique')}${Cn}</div>`;
+        const lockIc=svg('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',14);
+        p3body += `<button data-action="goto-step" data-step="1" class="tech-hint" id="f-3b-hint">${lockIc} กำลังใช้เทคนิค Cannula · แตะเพื่อสลับเป็น “N + C” แล้วกรอกส่วน Needle</button><div id="f-3b">${subHead('B','Needle Technique')}${B}</div><button data-action="goto-step" data-step="1" class="tech-hint" id="f-3c-hint">${lockIc} กำลังใช้เทคนิค Needle · แตะเพื่อสลับเป็น “N + C” แล้วกรอกส่วน Cannula</button><div id="f-3c">${subHead('C','Cannula Technique')}${Cn}</div>`;
       } else {
         p3body += subHead('B','Needle Technique')+B;
       }
@@ -496,6 +500,9 @@ document.addEventListener('DOMContentLoaded', function(){
       const nb=$('f-3b'),nc=$('f-3c');
       if(nb){nb.style.opacity=val==='C'?'0.35':'1';nb.style.pointerEvents=val==='C'?'none':'auto';}
       if(nc){nc.style.opacity=val==='N'?'0.35':'1';nc.style.pointerEvents=val==='N'?'none':'auto';}
+      const bh=$('f-3b-hint'),ch=$('f-3c-hint');
+      if(bh) bh.style.display=val==='C'?'flex':'none';
+      if(ch) ch.style.display=val==='N'?'flex':'none';
       calc('f');
     }
     function setPFGE(fid,val,pre){
