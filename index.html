@@ -847,7 +847,20 @@ document.addEventListener('DOMContentLoaded', function(){
       const doCap=()=>{ const a=card.querySelector('.sc-actions'); if(a)a.style.display='none';
         window.html2canvas(card,{scale:2.5,useCORS:true,backgroundColor:'#fff',logging:false,allowTaint:true,width:card.offsetWidth,height:card.offsetHeight}).then(cv=>{
           if(a)a.style.display=''; const pre=activeForm(); const nm=($(pre+'-name')||{}).value||'Assessment'; const form=pre==='f'?'Filler':'Toxin';
-          const link=document.createElement('a'); link.download='Merz_'+form+'_'+nm.replace(/\s+/g,'_')+'_Summary.jpg'; link.href=cv.toDataURL('image/jpeg',0.93); link.click(); toast('บันทึก JPG สำเร็จ!');
+          const fname='Merz_'+form+'_'+nm.replace(/\s+/g,'_')+'_Summary.jpg';
+          cv.toBlob(async (blob)=>{
+            if(!blob){ toast('เกิดข้อผิดพลาด — ลอง Screenshot แทนได้'); return; }
+            const file=new File([blob],fname,{type:'image/jpeg'});
+            // มือถือ: เปิด share sheet → เซฟลงคลังรูป / แชร์ LINE / Google Drive
+            if(navigator.canShare && navigator.canShare({files:[file]})){
+              try{ await navigator.share({files:[file],title:fname}); toast('บันทึก / แชร์รูปแล้ว'); return; }
+              catch(err){ if(err && err.name==='AbortError') return; } // ผู้ใช้กดยกเลิก → เงียบ; อื่นๆ → fallback ดาวน์โหลด
+            }
+            // เดสก์ท็อป: ดาวน์โหลดไฟล์
+            const url=URL.createObjectURL(blob);
+            const link=document.createElement('a'); link.download=fname; link.href=url; link.click();
+            setTimeout(()=>URL.revokeObjectURL(url),4000); toast('บันทึก JPG สำเร็จ!');
+          },'image/jpeg',0.93);
         }).catch(()=>{ if(a)a.style.display=''; toast('เกิดข้อผิดพลาด — ลอง Screenshot แทนได้'); });
       };
       if(window.html2canvas){ toast('กำลังสร้างรูปภาพ...'); doCap(); return; }
