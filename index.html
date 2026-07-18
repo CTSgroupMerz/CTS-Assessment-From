@@ -94,6 +94,23 @@ input,button,textarea,select{font-family:inherit}
 .sc-actions{display:flex;gap:8px;padding:12px 22px;background:#fff;border-top:1px solid #EDF1F5}
 .sc-act-btn{flex:1;padding:11px;border-radius:10px;border:none;cursor:pointer;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px}
 .sc-act-btn.close-btn{background:#EEF2F6;color:#5A6B7B}.sc-act-btn.pdf-btn{background:#C0504D;color:#fff}.sc-act-btn.jpg-btn{background:#2E7D8C;color:#fff}
+
+/* ── ACTION SHEET (bottom sheet) ── */
+.sheet-overlay{display:none;position:fixed;inset:0;background:rgba(10,20,40,.5);z-index:9997;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px)}
+.sheet-overlay.open{display:flex}
+.sheet{background:#fff;width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:16px 14px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(16,40,70,.22);animation:sheetUp .22s cubic-bezier(.2,.8,.2,1)}
+@keyframes sheetUp{from{transform:translateY(36px);opacity:.4}to{transform:none;opacity:1}}
+.sheet-grip{width:38px;height:4px;border-radius:99px;background:#DCE3EA;margin:0 auto 12px}
+.sheet-title{font-size:13px;font-weight:700;color:#0F2438;text-align:center;margin-bottom:14px}
+.sheet-opt{display:flex;align-items:center;gap:13px;width:100%;padding:13px 14px;border:1.5px solid #E7ECF1;border-radius:14px;background:#fff;cursor:pointer;margin-bottom:9px;text-align:left;transition:.12s}
+.sheet-opt:active{background:#F6F8FA;transform:scale(.99)}
+.sheet-opt-ic{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sheet-opt-tx{flex:1;min-width:0}
+.sheet-opt-tx b{display:block;font-size:14px;font-weight:700;color:#17293D}
+.sheet-opt-tx span{font-size:11.5px;color:#8A97A4}
+.sheet-cancel{width:100%;padding:13px;border-radius:14px;background:#EEF2F6;color:#5A6B7B;border:none;font-size:14px;font-weight:700;cursor:pointer;margin-top:3px}
+/* locked form: กันแตะแก้ข้อมูลหลังบันทึก */
+#panel-filler.locked,#panel-toxin.locked{pointer-events:none;opacity:.92}
 @media(max-width:560px){
   .sc-comments{grid-template-columns:1fr}
   .sc-header{flex-direction:column;gap:9px}      /* มือถือ: ข้อมูลลงมาใต้ logo เต็มความกว้าง ไม่เบียด */
@@ -116,7 +133,7 @@ input,button,textarea,select{font-family:inherit}
 
 <!-- ═══════════════ DASHBOARD ═══════════════ -->
 <div id="page-dashboard" class="page active">
-  <div style="background:#0F2438;padding:18px 20px 16px">
+  <div style="background:#0F2438;padding:calc(18px + env(safe-area-inset-top)) 20px 16px">
     <div class="app" style="padding:0;display:flex;align-items:center;justify-content:space-between">
       <div>
         <img src="merz-logo.png" alt="Merz Aesthetics" style="height:21px;width:auto;display:block;filter:brightness(0) invert(1)">
@@ -175,7 +192,7 @@ input,button,textarea,select{font-family:inherit}
 
 <!-- ═══════════════ FORM PAGE ═══════════════ -->
 <div id="page-form" class="page">
-  <div style="background:#0F2438;position:sticky;top:0;z-index:60">
+  <div style="background:#0F2438;position:sticky;top:0;z-index:60;padding-top:env(safe-area-inset-top)">
     <div class="app" style="padding:11px 16px;display:flex;align-items:center;gap:12px">
       <button data-action="back" style="background:rgba(255,255,255,.12);color:#fff;border:none;padding:8px 14px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>หน้าหลัก</button>
       <div id="form-topbar-title" style="font-family:'Space Grotesk',sans-serif;font-size:13.5px;font-weight:700;color:#fff;flex:1;text-align:center">แบบประเมิน</div>
@@ -192,12 +209,17 @@ input,button,textarea,select{font-family:inherit}
   <div id="panel-toxin" class="app" style="display:none"></div>
 
   <div id="action-bar" style="position:sticky;bottom:0;z-index:55;background:#fff;border-top:1px solid #E7ECF1;box-shadow:0 -4px 20px rgba(16,40,70,.08);display:none;padding-bottom:env(safe-area-inset-bottom)">
-    <div class="app" style="padding:12px 16px;display:flex;gap:8px">
-      <button data-action="clear" style="padding:12px 14px;border-radius:11px;background:#EEF2F6;color:#64748B;border:none;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg><span class="lbl-wide">ล้าง</span></button>
-      <button data-action="save" style="flex:1;padding:12px;border-radius:11px;background:#0F2438;color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7"/></svg>บันทึก</button>
-      <button data-action="export" style="padding:12px 15px;border-radius:11px;background:#fff;border:1.5px solid #E7ECF1;color:#C0504D;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/></svg>PDF</button>
-      <button data-action="export" style="padding:12px 15px;border-radius:11px;background:#fff;border:1.5px solid #E7ECF1;color:#2E7D8C;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="m5 18 5-5 4 4 2-2 3 3"/></svg>JPG</button>
-    </div>
+    <div class="app" id="action-bar-inner" style="padding:12px 16px;display:flex;gap:8px;align-items:center"></div>
+  </div>
+</div>
+
+<!-- ═══ ACTION SHEET ═══ -->
+<div class="sheet-overlay" id="action-sheet">
+  <div class="sheet">
+    <div class="sheet-grip"></div>
+    <div class="sheet-title" id="sheet-title"></div>
+    <div id="sheet-opts"></div>
+    <button class="sheet-cancel" data-action="sheet-cancel">ยกเลิก</button>
   </div>
 </div>
 
@@ -606,6 +628,63 @@ document.addEventListener('DOMContentLoaded', function(){
 
     // ── page routing ──
     let currentRecordId=null;
+    let locked=false;
+    const I={
+      trash:'<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/>',
+      save:'<path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7"/>',
+      edit:'<path d="M4 20h4L18 8l-4-4L4 16z"/><path d="M13 5l4 4"/>',
+      share:'<path d="M12 3v13"/><path d="m8 7 4-4 4 4"/><path d="M5 13v6a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-6"/>',
+      pdf:'<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/>',
+      jpg:'<rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="m5 18 5-5 4 4 2-2 3 3"/>'
+    };
+    function renderActionBar(){
+      const bar=$('action-bar-inner'); if(!bar) return;
+      const ghost=(act,label,icon,col)=>`<button data-action="${act}" style="padding:12px 14px;border-radius:11px;background:#EEF2F6;color:${col||'#64748B'};border:none;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">${svg(icon,16)}${label?`<span>${label}</span>`:''}</button>`;
+      const primary=(act,label,icon,bg)=>`<button data-action="${act}" style="flex:1;padding:12px;border-radius:11px;background:${bg||C.navy};color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px">${svg(icon,16)}${label}</button>`;
+      bar.innerHTML = locked
+        ? ghost('del-form','',I.trash,C.red)+primary('edit','แก้ไข',I.edit,C.teal)+ghost('sheet-export','ส่งออก',I.share)
+        : ghost('clear','ล้าง',I.trash)+primary('sheet-save','บันทึก / ส่งออก',I.save);
+    }
+    function setLocked(on){
+      locked=on;
+      const panel=activeForm()==='f'?'filler':'toxin';
+      const p=$('panel-'+panel);
+      if(p){ p.classList.toggle('locked',on); p.querySelectorAll('input,textarea,select').forEach(el=>el.disabled=on); }
+      renderActionBar();
+    }
+    function doEdit(){ setLocked(false); toast('แก้ไขได้แล้ว — เสร็จแล้วกด “บันทึกข้อมูล” ซ้ำในใบงานเดิม'); }
+    // ── bottom sheet ──
+    function openSheet(title,opts){
+      $('sheet-title').textContent=title;
+      $('sheet-opts').innerHTML=opts.map(o=>`<button class="sheet-opt" data-action="sheet-do" data-do="${o.act}"><div class="sheet-opt-ic" style="background:${o.bg};color:${o.col}">${svg(o.ic,19)}</div><div class="sheet-opt-tx"><b>${o.b}</b><span>${o.s}</span></div></button>`).join('');
+      $('action-sheet').classList.add('open');
+    }
+    function closeSheet(){ $('action-sheet').classList.remove('open'); }
+    function openSaveSheet(){
+      openSheet('บันทึก / ส่งออกใบงาน',[
+        {act:'do-save',b:'บันทึกข้อมูล',s:'เก็บใบงานนี้ · ซิงค์ให้ทีมเห็น',ic:I.save,col:C.navy,bg:'#E7ECF1'},
+        {act:'do-pdf',b:'บันทึกเป็น PDF',s:'เอกสารสรุปหน้าเดียว',ic:I.pdf,col:C.red,bg:C.redBg},
+        {act:'do-jpg',b:'บันทึกเป็นรูป JPG',s:'แชร์เข้าไลน์ / เซฟลงเครื่อง',ic:I.jpg,col:C.teal,bg:C.tealBg}
+      ]);
+    }
+    function openExportSheet(){
+      openSheet('ส่งออกใบงาน',[
+        {act:'do-pdf',b:'บันทึกเป็น PDF',s:'เอกสารสรุปหน้าเดียว',ic:I.pdf,col:C.red,bg:C.redBg},
+        {act:'do-jpg',b:'บันทึกเป็นรูป JPG',s:'แชร์เข้าไลน์ / เซฟลงเครื่อง',ic:I.jpg,col:C.teal,bg:C.tealBg}
+      ]);
+    }
+    function openDeleteSheet(){
+      openSheet('ลบใบงานนี้?',[
+        {act:'do-del',b:'ลบถาวร',s:'ข้อมูลจะถูกลบและกู้คืนไม่ได้',ic:I.trash,col:C.red,bg:C.redBg}
+      ]);
+    }
+    function handleSheetDo(d){
+      closeSheet();
+      if(d==='do-save') return saveRecord();
+      if(d==='do-pdf'){ openSummary(); setTimeout(printSummaryPDF,250); return; }
+      if(d==='do-jpg'){ openSummary(); setTimeout(exportSummaryJPG,250); return; }
+      if(d==='do-del'){ if(confirm('ยืนยันอีกครั้ง — ลบใบงานนี้ถาวร กู้คืนไม่ได้?')){ const id=currentRecordId; doDelete(id); toast('ลบข้อมูลแล้ว'); gotoDashboard(); } return; }
+    }
     function activeForm(){ return $('panel-filler').style.display!=='none'?'f':'t'; }
     function showPanel(isF){
       $('panel-filler').style.display=isF?'block':'none';
@@ -620,6 +699,7 @@ document.addEventListener('DOMContentLoaded', function(){
       window.scrollTo(0,0);
       currentRecordId=null;
       calc(form==='filler'?'f':'t');
+      setLocked(false);
     }
     function gotoDashboard(){
       $('page-form').classList.remove('active');
@@ -705,19 +785,23 @@ document.addEventListener('DOMContentLoaded', function(){
         const nr={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),createdAt:new Date().toISOString(),...data};
         records.unshift(nr); currentRecordId=nr.id; dbSave(records); pushRecord(nr); toast('บันทึกข้อมูลสำเร็จ! ('+(clinic||trainee)+')');
       }
-      renderRecords(); updateStats();
+      renderRecords(); updateStats(); setLocked(true);
     }
     function loadRecord(id){
       const rec=dbLoad().find(r=>r.id===id); if(!rec)return;
       currentRecordId=id;
       gotoAssessment(rec.form);
-      setTimeout(()=>{ restoreFormData(rec); toast('โหลดข้อมูล: '+((rec.fields&&rec.fields[(rec.form==='filler'?'f':'t')+'-name'])||'ไม่ระบุชื่อ')); },120);
+      setTimeout(()=>{ restoreFormData(rec); setLocked(true); toast('โหลดข้อมูล: '+((rec.fields&&rec.fields[(rec.form==='filler'?'f':'t')+'-name'])||'ไม่ระบุชื่อ')); },120);
     }
-    function deleteRecord(id){
-      if(!confirm('ลบข้อมูลนี้?'))return;
+    function doDelete(id){
       dbSave(dbLoad().filter(r=>r.id!==id)); pushDelete(id);
       if(currentRecordId===id)currentRecordId=null;
-      renderRecords(); updateStats(); toast('ลบข้อมูลแล้ว');
+      renderRecords(); updateStats();
+    }
+    function deleteRecord(id){ // dashboard row — ยืนยัน 2 ชั้น
+      if(!confirm('ต้องการลบใบงานนี้?'))return;
+      if(!confirm('ยืนยันอีกครั้ง — ลบถาวร กู้คืนไม่ได้'))return;
+      doDelete(id); toast('ลบข้อมูลแล้ว');
     }
     function setFilter(f){
       activeFilter=f;
@@ -902,9 +986,13 @@ document.addEventListener('DOMContentLoaded', function(){
         case 'pfge': setPFGE(el.dataset.fid,+el.dataset.v,el.dataset.fid[0]==='f'?'f':'t'); break;
         case 'filter': setFilter(el.dataset.f); break;
         case 'load': loadRecord(el.dataset.id); break;
-        case 'save': saveRecord(); break;
         case 'clear': clearForm(); break;
-        case 'export': openSummary(); break;
+        case 'sheet-save': openSaveSheet(); break;
+        case 'sheet-export': openExportSheet(); break;
+        case 'sheet-cancel': closeSheet(); break;
+        case 'sheet-do': handleSheetDo(el.dataset.do); break;
+        case 'edit': doEdit(); break;
+        case 'del-form': openDeleteSheet(); break;
         case 'close-summary': closeSummary(); break;
         case 'print-pdf': printSummaryPDF(); break;
         case 'export-jpg': exportSummaryJPG(); break;
@@ -918,6 +1006,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
     root.addEventListener('change',e=>{ if(e.target.classList.contains('ovsel')) calc(e.target.dataset.pre); });
     $('summary-overlay').addEventListener('click',e=>{ if(e.target===$('summary-overlay')) closeSummary(); });
+    $('action-sheet').addEventListener('click',e=>{ if(e.target===$('action-sheet')) closeSheet(); });
 
     // ── init ──
     setLevel('f','Standard'); setLevel('t','Standard'); setTech('N');
