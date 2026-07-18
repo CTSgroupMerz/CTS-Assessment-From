@@ -650,7 +650,7 @@ document.addEventListener('DOMContentLoaded', function(){
       const primary=(act,label,icon,bg)=>`<button data-action="${act}" style="flex:1;padding:12px;border-radius:11px;background:${bg||C.navy};color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px">${svg(icon,16)}${label}</button>`;
       bar.innerHTML = locked
         ? ghost('del-form','',I.trash,C.red)+primary('edit','แก้ไข',I.edit,C.teal)+ghost('sheet-export','ส่งออก',I.share)
-        : ghost('clear','ล้าง',I.trash)+primary('sheet-save','บันทึก / ส่งออก',I.save);
+        : primary('sheet-save','บันทึก / ส่งออก',I.save);
     }
     function setLocked(on){
       locked=on;
@@ -857,19 +857,6 @@ document.addEventListener('DOMContentLoaded', function(){
       list.innerHTML=html;
     }
 
-    function clearForm(){
-      if(!confirm('ล้างข้อมูลทั้งหมดในฟอร์มนี้?'))return;
-      const pre=activeForm(), panel=pre==='f'?'filler':'toxin';
-      S[pre].scores={};
-      document.querySelectorAll('#panel-'+panel+' .pfge-seg button').forEach(b=>{b.style.background='transparent';b.style.color=C.mute;b.style.boxShadow='none';b.style.fontWeight='600';});
-      document.querySelectorAll('#panel-'+panel+' .score-slider').forEach(sl=>{sl.value=0;sl.classList.remove('on');sl.style.setProperty('--fill','0%');});
-      document.querySelectorAll('#panel-'+panel+' [id$="-val"]').forEach(v=>{v.style.color='#C7B7B6';v.innerHTML='–<span style="font-size:13px;color:#D4C7C6">/10</span>';});
-      document.querySelectorAll('#panel-'+panel+' input, #panel-'+panel+' textarea').forEach(el=>el.value='');
-      const ov=$(pre+'-ov'); if(ov)ov.selectedIndex=0;
-      currentRecordId=null;
-      calc(pre); toast('ล้างข้อมูลแล้ว');
-    }
-
     // ── summary / export ──
     function openSummary(){ buildSummaryCard(activeForm()); $('summary-overlay').classList.add('open'); document.body.style.overflow='hidden'; }
     function closeSummary(){ $('summary-overlay').classList.remove('open'); document.body.style.overflow=''; }
@@ -992,7 +979,6 @@ document.addEventListener('DOMContentLoaded', function(){
         case 'pfge': setPFGE(el.dataset.fid,+el.dataset.v,el.dataset.fid[0]==='f'?'f':'t'); break;
         case 'filter': setFilter(el.dataset.f); break;
         case 'load': loadRecord(el.dataset.id); break;
-        case 'clear': clearForm(); break;
         case 'sheet-save': openSaveSheet(); break;
         case 'sheet-export': openExportSheet(); break;
         case 'sheet-cancel': closeSheet(); break;
