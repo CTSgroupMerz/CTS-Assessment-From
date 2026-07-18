@@ -106,7 +106,7 @@ input,button,textarea,select{font-family:inherit}
   body>*:not(#print-summary-portal){display:none!important}
   #print-summary-portal{display:block!important;position:static!important}
   #print-summary-portal,#print-summary-portal *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-  #print-summary-portal .summary-card{border-radius:0!important;box-shadow:none!important;width:100%!important;max-width:100%!important}
+  #print-summary-portal .summary-card{border-radius:0!important;box-shadow:none!important}
   #print-summary-portal .sc-actions{display:none!important}
   @page{margin:8mm;size:A4 portrait}
 }
@@ -844,7 +844,19 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     function printSummaryPDF(){
       const card=$('summary-card'), portal=$('print-summary-portal');
-      if(card&&portal){ const clone=card.cloneNode(true); const a=clone.querySelector('.sc-actions'); if(a)a.remove(); portal.innerHTML=''; portal.appendChild(clone); }
+      if(card&&portal){
+        const clone=card.cloneNode(true); const a=clone.querySelector('.sc-actions'); if(a)a.remove();
+        // fit หน้าเดียว: วัดความสูงจริงที่ความกว้างพิมพ์ 680px แล้วย่อให้พอดี A4 ถ้าเกิน
+        const W=680;
+        const meas=document.createElement('div'); meas.style.cssText='position:fixed;left:-9999px;top:0;width:'+W+'px';
+        clone.style.width=W+'px'; meas.appendChild(clone); document.body.appendChild(meas);
+        const H=clone.offsetHeight||0; document.body.removeChild(meas);
+        const A4W=720, A4H=1040, k=Math.min(1, A4W/W, H?A4H/H:1);
+        const box=document.createElement('div');
+        box.style.cssText='position:relative;width:'+(W*k)+'px;height:'+(H*k)+'px;overflow:hidden;margin:0 auto';
+        clone.style.cssText='width:'+W+'px;transform-origin:top left;transform:scale('+k+')';
+        box.appendChild(clone); portal.innerHTML=''; portal.appendChild(box);
+      }
       toast('กำลังเปิดหน้าต่าง Print — เลือก "Save as PDF"');
       setTimeout(()=>{ window.print(); setTimeout(()=>{if(portal)portal.innerHTML='';},2000); },300);
     }
