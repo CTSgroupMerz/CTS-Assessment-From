@@ -1,5 +1,5 @@
 // Merz Assessment — service worker (app shell cache, offline-first)
-const CACHE = 'merz-assess-v5';
+const CACHE = 'merz-assess-v6';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './merz-logo.png'];
 
 self.addEventListener('install', (e) => {
@@ -17,11 +17,12 @@ self.addEventListener('fetch', (e) => {
   const req = e.request;
   // เฉพาะ same-origin GET — ปล่อย API (script.google.com) + CDN ผ่านเน็ตตรงๆ ไม่แคช
   if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;
+  // network-first: ออนไลน์ = ได้ของใหม่เสมอ (เลิกค้าง cache เก่า), ออฟไลน์ = fallback cache
   e.respondWith(
-    caches.match(req).then((hit) => hit || fetch(req).then((res) => {
+    fetch(req).then((res) => {
       const copy = res.clone();
       caches.open(CACHE).then((c) => c.put(req, copy));
       return res;
-    }).catch(() => caches.match('./index.html')))
+    }).catch(() => caches.match(req).then((hit) => hit || caches.match('./index.html')))
   );
 });
