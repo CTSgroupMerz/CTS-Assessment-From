@@ -46,12 +46,13 @@ input,button,textarea,select{font-family:inherit}
 .summary-overlay.open{display:flex;align-items:flex-start;justify-content:center}
 .summary-card{background:#fff;width:100%;max-width:680px;border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.35);position:relative}
 .sc-header{background:linear-gradient(120deg,#0F2438,#1E4E78 60%,#2E7D8C);padding:16px 22px 14px;display:flex;align-items:flex-start;gap:16px}
-.sc-logo{height:19px;filter:brightness(0) invert(1);display:block}
+.sc-header>div:first-child{flex-shrink:0}
+.sc-logo{width:132px;height:auto;filter:brightness(0) invert(1);display:block;flex-shrink:0}
 .sc-header-info{flex:1;min-width:0}
 .sc-form-tag{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:4px}
-.sc-trainee{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;color:#fff;line-height:1.2;overflow-wrap:anywhere}
+.sc-trainee{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;color:#fff;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sc-meta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
-.sc-meta-item{font-size:10.5px;color:rgba(255,255,255,.72);display:flex;align-items:center;gap:5px;min-width:0;overflow-wrap:anywhere}
+.sc-meta-item{font-size:10.5px;color:rgba(255,255,255,.72);display:flex;align-items:center;gap:5px;min-width:0;overflow-wrap:break-word}
 .sc-meta-item svg{opacity:.7;flex-shrink:0}
 .sc-date-badge{background:rgba(255,233,168,.16);border:1px solid rgba(255,233,168,.4);color:#FFE9A8;font-size:9.5px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap;align-self:flex-start;letter-spacing:.04em}
 .sc-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
@@ -98,6 +99,7 @@ input,button,textarea,select{font-family:inherit}
 @media print{
   body>*:not(#print-summary-portal){display:none!important}
   #print-summary-portal{display:block!important;position:static!important}
+  #print-summary-portal,#print-summary-portal *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   #print-summary-portal .summary-card{border-radius:0!important;box-shadow:none!important;width:100%!important;max-width:100%!important}
   #print-summary-portal .sc-actions{display:none!important}
   @page{margin:8mm;size:A4 portrait}
