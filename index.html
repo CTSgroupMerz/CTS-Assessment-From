@@ -143,11 +143,52 @@ input,button,textarea,select{font-family:inherit}
   #print-summary-portal,#print-summary-portal *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   #print-summary-portal .summary-card{border-radius:0!important;box-shadow:none!important}
   #print-summary-portal .sc-actions{display:none!important}
+  #print-summary-portal .print-page{position:relative;page-break-after:always}
+  #print-summary-portal .print-page:last-child{page-break-after:auto}
+  #print-summary-portal .print-pageno{position:absolute;top:3mm;right:4mm;font-size:9px;font-weight:700;color:#5A6B7B;background:rgba(255,255,255,.85);border-radius:5px;padding:1px 7px}
   @page{margin:8mm;size:A4 portrait}
 }
+/* ── LOGIN GATE ── */
+#login-overlay{position:fixed;inset:0;z-index:10000;background:linear-gradient(160deg,#0F2438,#123a52);display:flex;align-items:center;justify-content:center;padding:24px}
+#login-overlay.hidden{display:none}
+#login-form{background:#fff;border-radius:18px;padding:30px 26px;width:100%;max-width:340px;box-shadow:0 20px 60px rgba(0,0,0,.35);display:flex;flex-direction:column;gap:12px}
+.login-logo{height:26px;width:auto;align-self:center;filter:brightness(0);margin-bottom:6px}
+.login-title{font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:700;color:#0F2438;text-align:center}
+.login-sub{font-size:12px;color:#8A97A4;text-align:center;margin:-8px 0 4px}
+.login-input{width:100%;box-sizing:border-box;padding:12px 14px;border:1.5px solid #E1E7EC;border-radius:10px;font-size:14px;color:#17293D;outline:none;transition:.15s}
+.login-input:focus{border-color:#2E7D8C}
+.login-err{font-size:12px;color:#C0504D;min-height:16px;text-align:center;font-weight:600}
+.login-btn{width:100%;padding:12px;border:none;border-radius:10px;background:#2E7D8C;color:#fff;font-size:15px;font-weight:700;cursor:pointer}
+.login-btn:active{opacity:.9}
 </style>
 </head>
 <body>
+
+<!-- ═══════════════ LOGIN GATE ═══════════════ -->
+<div id="login-overlay">
+  <form id="login-form" autocomplete="off">
+    <img src="merz-logo.png" alt="Merz Aesthetics" class="login-logo">
+    <div class="login-title">CTS Assessment</div>
+    <div class="login-sub">เข้าสู่ระบบเพื่อใช้งาน</div>
+    <input id="login-user" class="login-input" placeholder="Username" autocomplete="username">
+    <input id="login-pass" class="login-input" type="password" placeholder="Password" autocomplete="current-password">
+    <div id="login-err" class="login-err"></div>
+    <button type="submit" class="login-btn">เข้าสู่ระบบ</button>
+  </form>
+</div>
+<script>
+(function(){
+  var KEY='cts_auth', ov=document.getElementById('login-overlay');
+  if(sessionStorage.getItem(KEY)==='1'){ ov.classList.add('hidden'); return; }
+  document.getElementById('login-form').addEventListener('submit',function(e){
+    e.preventDefault();
+    var u=document.getElementById('login-user').value.trim(), p=document.getElementById('login-pass').value;
+    if(u==='admin'&&p==='cts1234'){ sessionStorage.setItem(KEY,'1'); ov.classList.add('hidden'); }
+    else{ document.getElementById('login-err').textContent='ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง'; document.getElementById('login-pass').value=''; }
+  });
+  document.getElementById('login-user').focus();
+})();
+</script>
 
 <!-- ═══════════════ DASHBOARD ═══════════════ -->
 <div id="page-dashboard" class="page active">
@@ -1009,7 +1050,17 @@ document.addEventListener('DOMContentLoaded', function(){
       const run=()=>{
         toast('กำลังสร้าง PDF...');
         window.html2canvas(card,{scale:2.5,useCORS:true,backgroundColor:'#fff',logging:false,allowTaint:true,onclone:pdfClone}).then(cv=>{
-          portal.innerHTML='<img src="'+cv.toDataURL('image/jpeg',0.95)+'" style="width:100%;display:block">';
+          const pxPerPage=Math.round(cv.width*281/194);           // สัดส่วนพื้นที่ A4 (ขอบ 8mm): กว้าง 194mm สูง 281mm
+          const pages=Math.max(1,Math.ceil(cv.height/pxPerPage));
+          let html='';
+          for(let i=0;i<pages;i++){
+            const h=Math.min(pxPerPage,cv.height-i*pxPerPage);
+            const sc=document.createElement('canvas'); sc.width=cv.width; sc.height=h;
+            sc.getContext('2d').drawImage(cv,0,i*pxPerPage,cv.width,h,0,0,cv.width,h);
+            const no=pages>1?'<div class="print-pageno">'+(i+1)+' / '+pages+'</div>':'';
+            html+='<div class="print-page"><img src="'+sc.toDataURL('image/jpeg',0.95)+'" style="width:100%;display:block">'+no+'</div>';
+          }
+          portal.innerHTML=html;
           toast('กำลังเปิดหน้าต่าง Print — เลือก "Save as PDF"');
           setTimeout(()=>{ window.print(); setTimeout(()=>{portal.innerHTML='';},2000); },300);
         }).catch(()=>toast('เกิดข้อผิดพลาด — ลอง Screenshot แทนได้'));
