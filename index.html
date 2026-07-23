@@ -160,6 +160,13 @@ input,button,textarea,select{font-family:inherit}
 .login-err{font-size:12px;color:#C0504D;min-height:16px;text-align:center;font-weight:600}
 .login-btn{width:100%;padding:12px;border:none;border-radius:10px;background:#2E7D8C;color:#fff;font-size:15px;font-weight:700;cursor:pointer}
 .login-btn:active{opacity:.9}
+/* ── CREDIT ── */
+.credit-overlay{display:none;position:fixed;inset:0;z-index:9998;background:rgba(10,20,40,.5);align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(2px)}
+.credit-overlay.open{display:flex}
+.credit-card{background:#fff;border-radius:18px;padding:26px 28px;max-width:320px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(16,40,70,.25)}
+.credit-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#8A97A4;margin-bottom:14px}
+.credit-name{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;color:#0F2438;margin:5px 0}
+.credit-close{margin-top:18px;padding:10px 30px;border:none;border-radius:10px;background:#2E7D8C;color:#fff;font-size:14px;font-weight:700;cursor:pointer}
 </style>
 </head>
 <body>
@@ -246,6 +253,19 @@ input,button,textarea,select{font-family:inherit}
       <button data-action="filter" data-f="toxin" style="padding:7px 15px;border-radius:99px;font-size:12px;font-weight:600;border:1.5px solid #E7ECF1;background:#fff;color:#64748B;cursor:pointer">Toxin</button>
     </div>
     <div class="recscroll" id="records-list" style="background:#fff;border:1px solid #E7ECF1;border-radius:14px;overflow:hidden"></div>
+    <div style="text-align:center;margin-top:22px">
+      <button data-action="show-credit" style="background:none;border:none;color:#98A6B3;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:5px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h0"/></svg>ผู้พัฒนา</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CREDIT ═══ -->
+<div id="credit-overlay" class="credit-overlay">
+  <div class="credit-card">
+    <div class="credit-title">ผู้พัฒนา · Developed by</div>
+    <div class="credit-name">Nisalux Preedakorn</div>
+    <div class="credit-name">Potchara Preedakorn</div>
+    <button data-action="close-credit" class="credit-close">ปิด</button>
   </div>
 </div>
 
@@ -1119,6 +1139,8 @@ document.addEventListener('DOMContentLoaded', function(){
         case 'edit': doEdit(); break;
         case 'del-form': openDeleteSheet(); break;
         case 'close-summary': closeSummary(); break;
+        case 'show-credit': $('credit-overlay').classList.add('open'); break;
+        case 'close-credit': $('credit-overlay').classList.remove('open'); break;
         case 'print-pdf': printSummaryPDF(); break;
         case 'export-jpg': exportSummaryJPG(); break;
         case 'toggle-grp': { const g=$(el.dataset.grp); if(g) g.classList.toggle('collapsed'); break; }
@@ -1132,6 +1154,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
     root.addEventListener('change',e=>{ if(e.target.classList.contains('ovsel')) calc(e.target.dataset.pre); });
     $('summary-overlay').addEventListener('click',e=>{ if(e.target===$('summary-overlay')) closeSummary(); });
+    $('credit-overlay').addEventListener('click',e=>{ if(e.target===$('credit-overlay')) $('credit-overlay').classList.remove('open'); });
     $('action-sheet').addEventListener('click',e=>{ if(e.target===$('action-sheet')) closeSheet(); });
 
     // ── init ──
