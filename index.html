@@ -25,7 +25,7 @@ input,button,textarea,select{font-family:inherit}
 @media(max-width:640px){.grid2{grid-template-columns:1fr}}
 .field{width:100%;padding:11px 13px;background:#F1F5F8;border:1.5px solid transparent;border-radius:10px;font-size:14px;color:#17293D;outline:none;transition:.15s}
 .field:focus{border-color:#2E7D8C;background:#fff;box-shadow:0 0 0 3px rgba(46,125,140,.14)}
-.comment-input{width:100%;padding:9px 12px;background:#F6F8FA;border:1.5px solid #EBEFF3;border-radius:9px;font-size:12.5px;color:#3F4E5C;outline:none;resize:vertical;min-height:42px;transition:.15s;margin-top:10px}
+.comment-input{width:100%;padding:9px 12px;background:#F6F8FA;border:1.5px solid #EBEFF3;border-radius:9px;font-size:13.5px;color:#3F4E5C;outline:none;resize:vertical;min-height:72px;transition:.15s;margin-top:10px}
 .comment-input:focus{border-color:#2E7D8C;background:#fff}
 .score-slider{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:99px;background:#E4EAF0;outline:none;cursor:pointer}
 .score-slider.on{background:linear-gradient(90deg,#C0504D var(--fill,0%),#E4EAF0 var(--fill,0%))}
@@ -82,6 +82,10 @@ input,button,textarea,select{font-family:inherit}
 .sc-result.pass{background:linear-gradient(135deg,#2E9E5B,#1e7a45)}.sc-result.cond{background:linear-gradient(135deg,#D4890A,#b5730a)}.sc-result.fail{background:linear-gradient(135deg,#C0504D,#9c3d3a)}.sc-result.none{background:#EEF2F6;color:#8A97A4}
 .sc-result-label{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700}
 .sc-result-desc{font-size:11px;opacity:.85;margin-top:3px}
+.sc-result-total{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;margin-top:7px;letter-spacing:.01em}
+.sc-part-comments{padding:2px 13px 9px;display:flex;flex-direction:column;gap:3px;background:rgba(15,36,56,.015)}
+.sc-pc-line{font-size:10px;color:#3F4E5C;line-height:1.5;overflow-wrap:anywhere}
+.sc-pc-line b{color:#2E7D8C;font-weight:700}
 .sc-comments{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
 .sc-comment-box{background:#F6F8FA;border:1px solid #EDF1F5;border-radius:8px;padding:8px 10px;min-width:0}
 .sc-comment-label{font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#5E6E7E;margin-bottom:4px}
@@ -93,7 +97,6 @@ input,button,textarea,select{font-family:inherit}
 .sc-sig-img{display:block;height:44px;width:auto;max-width:calc(100% - 20px);margin:0 auto -2px;object-fit:contain}
 .sig-pad{width:100%;box-sizing:border-box;height:120px;border:1.5px dashed #CBD5DF;border-radius:10px;background:#fff;touch-action:none;cursor:crosshair;display:block}
 .sig-clear{font-size:10px;color:#7A8794;cursor:pointer;margin-top:5px;user-select:none;display:inline-block}
-.sc-reassess{font-size:10px;color:#5E6E7E;text-align:center;flex:1}.sc-reassess strong{color:#D4890A;font-size:11px;display:block;margin-top:2px}
 .sc-actions{display:flex;gap:8px;padding:12px 22px;background:#fff;border-top:1px solid #EDF1F5}
 .sc-act-btn{flex:1;padding:11px;border-radius:10px;border:none;cursor:pointer;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px}
 .sc-act-btn.close-btn{background:#EEF2F6;color:#5A6B7B}.sc-act-btn.pdf-btn{background:#C0504D;color:#fff}.sc-act-btn.jpg-btn{background:#2E7D8C;color:#fff}
@@ -266,12 +269,13 @@ input,button,textarea,select{font-family:inherit}
       <div class="sc-result none" id="sc-result-box">
         <div class="sc-result-label" id="sc-result-label">กรอกคะแนนเพื่อดูผล</div>
         <div class="sc-result-desc" id="sc-result-desc">กรุณาให้คะแนนในทุก Part</div>
+        <div class="sc-result-total" id="sc-result-total"></div>
       </div>
       <div class="sc-comments" id="sc-comments"></div>
     </div>
     <div class="sc-footer">
       <div class="sc-sig-col"><div class="sc-sig-label">Trainee Signature</div><img class="sc-sig-img" id="sc-sig-trainee" alt=""><div class="sc-sig-line"></div></div>
-      <div class="sc-reassess"><span style="font-size:8.5px;text-transform:uppercase;letter-spacing:.06em">วันนัด Re-assess</span><strong id="sc-reassess-date">—</strong></div>
+      <div class="sc-sig-col"><div class="sc-sig-label">Clinic Training Team</div><img class="sc-sig-img" id="sc-sig-clinicteam" alt=""><div class="sc-sig-line"></div></div>
       <div class="sc-sig-col"><div class="sc-sig-label">Trainer Signature</div><img class="sc-sig-img" id="sc-sig-trainer" alt=""><div class="sc-sig-line"></div></div>
     </div>
     <div class="sc-actions">
@@ -473,6 +477,7 @@ document.addEventListener('DOMContentLoaded', function(){
         <div class="grid2">
           <div><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:${C.mute};margin-bottom:8px">Trainee Signature <span style="font-weight:400;text-transform:none;color:#7A8794">— แตะเพื่อเซ็น</span></div><canvas class="sig-pad" id="${pre}-sig-trainee" data-pre="${pre}" data-sig="trainee"></canvas><div class="sig-clear" data-clearsig="${pre}-sig-trainee">ล้างลายเซ็น</div></div>
           <div><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:${C.mute};margin-bottom:8px">Trainer Signature <span style="font-weight:400;text-transform:none;color:#7A8794">— แตะเพื่อเซ็น</span></div><canvas class="sig-pad" id="${pre}-sig-trainer" data-pre="${pre}" data-sig="trainer"></canvas><div class="sig-clear" data-clearsig="${pre}-sig-trainer">ล้างลายเซ็น</div></div>
+          <div style="grid-column:1/-1"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:${C.mute};margin-bottom:8px">Clinic Training Team <span style="font-weight:400;text-transform:none;color:#7A8794">— แตะเพื่อเซ็น (รับทราบผลการประเมิน)</span></div><canvas class="sig-pad" id="${pre}-sig-clinicteam" data-pre="${pre}" data-sig="clinicteam"></canvas><div class="sig-clear" data-clearsig="${pre}-sig-clinicteam">ล้างลายเซ็น</div></div>
         </div>
         <div style="margin-top:14px;text-align:center;font-size:11px;padding:10px;background:${C.navy};border-radius:9px;color:rgba(255,255,255,.5)">Merz Aesthetics Assessment Form · ${formTag} · TRAINER COPY</div>`);
 
@@ -921,7 +926,6 @@ document.addEventListener('DOMContentLoaded', function(){
       $('sc-lic').textContent=g(pre+'-lic')||'—';
       $('sc-date').textContent=dtStr; $('sc-trainer').textContent=g(pre+'-tr')||'—';
       $('sc-topic').textContent=g(pre+'-ws')||'—'; $('sc-date-badge').textContent=dtShort;
-      $('sc-reassess-date').textContent=rasStr;
       let pills=`<div class="sc-pill ${isAdv?'lvl-adv':'lvl-std'}">${isAdv?'Advance':'Standard'}</div>`;
       if(isF){ const tm={N:'Needle Only',C:'Cannula Only',NC:'Needle + Cannula'}; pills+=`<div class="sc-pill tch">${tm[f.tech]||f.tech}</div>`; }
       $('sc-pills').innerHTML=pills;
@@ -944,6 +948,19 @@ document.addEventListener('DOMContentLoaded', function(){
       const pcolChip=v=>v===4?'#2E9E5B':v===3?'#2E7D8C':v===2?'#D4890A':v===1?'#C0504D':'#5E6E7E';
       const scol=v=>v==null?'#5E6E7E':v>=8?'#2E9E5B':v>=6?'#D4890A':'#C0504D';
       const names=D[pre];
+      const commentMap={};
+      document.querySelectorAll('#panel-'+(isF?'filler':'toxin')+' .comment-input').forEach(el=>{const v=(el.value||'').trim();if(v)commentMap[el.dataset.fid]=v;});
+      const fidOf=code=>pre+code.replace(/\./g,'').toLowerCase().replace('★','');
+      const shortName=n=>n.replace(/&amp;/g,'&').split('—')[0].trim();
+      const partComments=rows=>{
+        const lines=rows.map(r=>{const c=commentMap[fidOf(r[0])];return c?`<div class="sc-pc-line"><b>${esc(r[0])} ${esc(shortName(r[1]))}:</b> ${esc(c)}</div>`:'';}).filter(Boolean).join('');
+        return lines?`<div class="sc-part-comments">${lines}</div>`:'';
+      };
+      const p2rows=isAdv?names.p2.concat(names.p2adv):names.p2;
+      let p3rows=names.A.slice();
+      if(isF){ if(f.tech!=='C')p3rows=p3rows.concat(names.B); if(f.tech!=='N')p3rows=p3rows.concat(names.Cn); }
+      else p3rows=p3rows.concat(names.B);
+      p3rows=p3rows.concat(names.Dd);
       const pfChip=(code,name,v)=>`<div class="sc-item-chip"><span style="color:#5E6E7E;font-size:8px">${code}</span> ${name.replace(/&amp;.*/,'').split('—')[0].trim().slice(0,16)} <span style="color:${pcolChip(v)};font-weight:700">${pl(v)}</span></div>`;
       const scChip=(key,code,name)=>{const v=gs(key);return `<div class="sc-item-chip"><span style="color:#5E6E7E;font-size:8px">${code}</span> ${name.split('—')[0].trim().slice(0,14)} <span style="color:${scol(v)};font-weight:700">${v!=null?v+'/10':'—'}</span></div>`;};
       let p2Chips=names.p2.map((r,i)=>pfChip(r[0],r[1],p2base[i])).join('');
@@ -953,8 +970,8 @@ document.addEventListener('DOMContentLoaded', function(){
       else p3Chips+=names.B.map(r=>scChip(pre+r[0].replace(/\./g,'').toLowerCase(),r[0],r[1])).join('');
       p3Chips+=names.Dd.map(r=>scChip(pre+r[0].replace(/\./g,'').toLowerCase(),r[0],r[1])).join('');
       let p4Chips=names.p4.map((r,i)=>pfChip(r[0],r[1],gs(p4keys[i]))).join('');
-      const partRow=(cls,lbl,title,pct,tot,max,chips)=>`<div class="sc-part-row"><div class="sc-part-top"><div class="sc-part-label ${cls}">${lbl}</div><div class="sc-part-content"><div class="sc-part-title">${title}</div><div class="sc-prog-row"><div class="sc-prog-track"><div class="sc-prog-bar" style="width:${Math.min(pct*100,100).toFixed(0)}%;background:${pcol(pct)}"></div></div><div class="sc-pct">${Math.round(pct*100)}%</div><div class="sc-prog-val">${tot}<span style="font-size:10px;color:#5E6E7E;font-weight:400">/${max}</span></div></div></div><div class="sc-part-badge"><div class="sc-badge ${bcls(pct)}">${btxt(pct)}</div></div></div><div class="sc-items-row">${chips}</div></div>`;
-      $('sc-parts-container').innerHTML=partRow('teal','P2','Knowledge & Planning',p2pct,p2t,p2m,p2Chips)+partRow('red','P3 ★','Injection Technique · '+p3keys.length+' items',p3pct,p3t,p3m,p3Chips)+partRow('green','P4','Post-Procedure & Professional',p4pct,p4t,12,p4Chips);
+      const partRow=(cls,lbl,title,pct,tot,max,chips,comments)=>`<div class="sc-part-row"><div class="sc-part-top"><div class="sc-part-label ${cls}">${lbl}</div><div class="sc-part-content"><div class="sc-part-title">${title}</div><div class="sc-prog-row"><div class="sc-prog-track"><div class="sc-prog-bar" style="width:${Math.min(pct*100,100).toFixed(0)}%;background:${pcol(pct)}"></div></div><div class="sc-pct">${Math.round(pct*100)}%</div><div class="sc-prog-val">${tot}<span style="font-size:10px;color:#5E6E7E;font-weight:400">/${max}</span></div></div></div><div class="sc-part-badge"><div class="sc-badge ${bcls(pct)}">${btxt(pct)}</div></div></div><div class="sc-items-row">${chips}</div>${comments||''}</div>`;
+      $('sc-parts-container').innerHTML=partRow('teal','P2','Knowledge & Planning',p2pct,p2t,p2m,p2Chips,partComments(p2rows))+partRow('red','P3 ★','Injection Technique · '+p3keys.length+' items',p3pct,p3t,p3m,p3Chips,partComments(p3rows))+partRow('green','P4','Post-Procedure & Professional',p4pct,p4t,12,p4Chips,partComments(names.p4));
       const pp=isAdv?0.85:0.80, cp=isAdv?0.75:0.70;
       const allK=[pre+'21',pre+'22',pre+'23',pre+'24',...(isAdv?[pre+'25',pre+'26']:[]),...p3keys,...p4keys];
       const allS=allK.every(k=>gs(k)!==null);
@@ -964,10 +981,12 @@ document.addEventListener('DOMContentLoaded', function(){
       const rb=$('sc-result-box'); rb.className='sc-result '+finalR;
       const rm={pass:['PASS','พร้อมปฏิบัติภายใต้การดูแล'],cond:['CONDITIONAL PASS','ต้องพัฒนาในจุดที่ยังไม่ถึงเกณฑ์ Pass ก่อนปฏิบัติ'],fail:['RE-TRAINING REQUIRED','ยังไม่พร้อมปฏิบัติอย่างปลอดภัย ต้องเทรนซ้ำ'],none:['กรอกคะแนนเพื่อดูผล','กรุณาให้คะแนนในทุก Part']}[finalR];
       $('sc-result-label').textContent=rm[0]; $('sc-result-desc').textContent=rm[1];
+      const totScore=p2t+p3t+p4t, totMax=p2m+p3m+12;
+      $('sc-result-total').textContent=finalR==='none'?'':('คะแนนรวม '+totScore+'/'+totMax+' ('+Math.round(totScore/totMax*100)+'%)');
       const mkBox=(l,t)=>`<div class="sc-comment-box"><div class="sc-comment-label">${l}</div><div class="sc-comment-text">${esc(t||'—')}</div></div>`;
       $('sc-comments').innerHTML=mkBox('จุดแข็ง (Strengths)',g(pre+'-str'))+mkBox('ประเด็นที่ควรพัฒนา',g(pre+'-imp'))+mkBox('Action Plan',g(pre+'-act'))+(rasStr!=='—'?mkBox('วันนัด Re-assess',rasStr):'');
       const sig=(S[pre]||{}).sig||{};
-      [['sc-sig-trainee',sig.trainee],['sc-sig-trainer',sig.trainer]].forEach(([id,src])=>{ const im=$(id); if(!im)return; if(src){im.src=src;im.style.display='';}else{im.removeAttribute('src');im.style.display='none';} });
+      [['sc-sig-trainee',sig.trainee],['sc-sig-clinicteam',sig.clinicteam],['sc-sig-trainer',sig.trainer]].forEach(([id,src])=>{ const im=$(id); if(!im)return; if(src){im.src=src;im.style.display='';}else{im.removeAttribute('src');im.style.display='none';} });
     }
     let _whiteLogo=null;
     function whiteLogoDataURL(){
@@ -983,6 +1002,7 @@ document.addEventListener('DOMContentLoaded', function(){
     function pdfClone(doc){
       const l=doc.querySelector('#summary-card .sc-logo'), wl=whiteLogoDataURL(); if(l&&wl){ l.src=wl; l.style.filter='none'; }
       const ac=doc.querySelector('#summary-card .sc-actions'); if(ac)ac.style.display='none';
+      doc.querySelectorAll('#summary-card .sc-items-row').forEach(el=>el.style.display='none');
     }
     function printSummaryPDF(){
       const card=$('summary-card'), portal=$('print-summary-portal'); if(!card||!portal) return;
