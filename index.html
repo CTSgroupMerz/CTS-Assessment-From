@@ -650,7 +650,7 @@ document.addEventListener('DOMContentLoaded', function(){
       let auto='none';
       if(allS){ if(p2pct>=pp&&p3pct>=pp&&p4pct>=pp)auto='pass'; else if(p2pct>=cp&&p3pct>=cp&&p4pct>=cp)auto='cond'; else auto='fail'; }
       const ov=$('f-ov').value;
-      renderResult('f',ov!=='auto'?ov:auto);
+      renderResult('f',ov!=='auto'?ov:auto,{s:p2t+p3t+p4t,m:p2m+p3m+12});
     }
     function calcT(){
       const f=S.t, isAdv=f.level==='Advance';
@@ -678,16 +678,18 @@ document.addEventListener('DOMContentLoaded', function(){
       let auto='none';
       if(allS){ if(p2pct>=pp&&p3pct>=pp&&p4pct>=pp)auto='pass'; else if(p2pct>=cp&&p3pct>=cp&&p4pct>=cp)auto='cond'; else auto='fail'; }
       const ov=$('t-ov').value;
-      renderResult('t',ov!=='auto'?ov:auto);
+      renderResult('t',ov!=='auto'?ov:auto,{s:p2t+p3t+p4t,m:p2m+p3m+12});
     }
-    const resMap={ pass:['PASS','พร้อมปฏิบัติภายใต้การดูแล','linear-gradient(135deg,#2E9E5B,#1e7a45)','#fff'],
+    const resMap={ pass:['PASS','','linear-gradient(135deg,#2E9E5B,#1e7a45)','#fff'],
       cond:['CONDITIONAL PASS','ต้องพัฒนาในจุดที่ยังไม่ถึงเกณฑ์ Pass ก่อนปฏิบัติ','linear-gradient(135deg,#D4890A,#b5730a)','#fff'],
       fail:['RE-TRAINING REQUIRED','ยังไม่พร้อมปฏิบัติอย่างปลอดภัย ต้องเทรนซ้ำ','linear-gradient(135deg,#C0504D,#9c3d3a)','#fff'],
       none:['กรอกคะแนนเพื่อดูผล','กรุณาให้คะแนนในทุก Part','#EEF2F6',C.mute] };
-    function renderResult(pre,r){
+    function renderResult(pre,r,tot){
       const box=$(pre+'-result'); const m=resMap[r]||resMap.none;
       box.style.background=m[2]; box.style.color=m[3];
-      box.innerHTML=`<div style="font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:700">${m[0]}</div><div style="font-size:12px;margin-top:4px;opacity:.9">${m[1]}</div>`;
+      const desc=m[1]?`<div style="font-size:12px;margin-top:4px;opacity:.9">${m[1]}</div>`:'';
+      const total=(tot&&r!=='none')?`<div style="font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;margin-top:6px">คะแนนรวม ${tot.s}/${tot.m} (${Math.round(tot.s/tot.m*100)}%)</div>`:'';
+      box.innerHTML=`<div style="font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:700">${m[0]}</div>${desc}${total}`;
     }
     function updateSteps(pre){
       const active=$('page-form').classList.contains('active');
@@ -1040,7 +1042,7 @@ document.addEventListener('DOMContentLoaded', function(){
       if(allS){ if(p2pct>=pp&&p3pct>=pp&&p4pct>=pp)finalR='pass'; else if(p2pct>=cp&&p3pct>=cp&&p4pct>=cp)finalR='cond'; else finalR='fail'; }
       const ovv=$(pre+'-ov').value; if(ovv!=='auto')finalR=ovv;
       const rb=$('sc-result-box'); rb.className='sc-result '+finalR;
-      const rm={pass:['PASS','พร้อมปฏิบัติภายใต้การดูแล'],cond:['CONDITIONAL PASS','ต้องพัฒนาในจุดที่ยังไม่ถึงเกณฑ์ Pass ก่อนปฏิบัติ'],fail:['RE-TRAINING REQUIRED','ยังไม่พร้อมปฏิบัติอย่างปลอดภัย ต้องเทรนซ้ำ'],none:['กรอกคะแนนเพื่อดูผล','กรุณาให้คะแนนในทุก Part']}[finalR];
+      const rm={pass:['PASS',''],cond:['CONDITIONAL PASS','ต้องพัฒนาในจุดที่ยังไม่ถึงเกณฑ์ Pass ก่อนปฏิบัติ'],fail:['RE-TRAINING REQUIRED','ยังไม่พร้อมปฏิบัติอย่างปลอดภัย ต้องเทรนซ้ำ'],none:['กรอกคะแนนเพื่อดูผล','กรุณาให้คะแนนในทุก Part']}[finalR];
       $('sc-result-label').textContent=rm[0]; $('sc-result-desc').textContent=rm[1];
       const totScore=p2t+p3t+p4t, totMax=p2m+p3m+12;
       $('sc-result-total').textContent=finalR==='none'?'':('คะแนนรวม '+totScore+'/'+totMax+' ('+Math.round(totScore/totMax*100)+'%)');
@@ -1069,20 +1071,35 @@ document.addEventListener('DOMContentLoaded', function(){
       const card=$('summary-card'), portal=$('print-summary-portal'); if(!card||!portal) return;
       const run=()=>{
         toast('กำลังสร้าง PDF...');
-        window.html2canvas(card,{scale:2.5,useCORS:true,backgroundColor:'#fff',logging:false,allowTaint:true,onclone:pdfClone}).then(cv=>{
+        // วัดขอบล่างของแต่ละบล็อกจาก "โคลน" ที่จะถูกเรนเดอร์จริง (ซ่อน .sc-items-row แล้ว สูงต่างจากการ์ดบนจอ) เพื่อให้จุดตัดตรงพิกัด canvas
+        let cloneH=0, cloneCuts=[];
+        const onclonePDF=doc=>{ pdfClone(doc); const cc=doc.querySelector('#summary-card'); if(!cc)return;
+          cloneH=cc.offsetHeight; const t=cc.getBoundingClientRect().top;
+          cloneCuts=[...cc.querySelectorAll('.sc-header,.sc-part-row,.sc-result,.sc-comment-box,.sc-footer')].map(el=>el.getBoundingClientRect().bottom-t); };
+        window.html2canvas(card,{scale:2.5,useCORS:true,backgroundColor:'#fff',logging:false,allowTaint:true,onclone:onclonePDF}).then(cv=>{
           const pxPerPage=Math.round(cv.width*281/194);           // สัดส่วนพื้นที่ A4 (ขอบ 8mm): กว้าง 194mm สูง 281mm
-          const pages=Math.max(1,Math.ceil(cv.height/pxPerPage));
-          let html='';
-          for(let i=0;i<pages;i++){
-            const h=Math.min(pxPerPage,cv.height-i*pxPerPage);
-            const sc=document.createElement('canvas'); sc.width=cv.width; sc.height=h;
-            sc.getContext('2d').drawImage(cv,0,i*pxPerPage,cv.width,h,0,0,cv.width,h);
-            const no=pages>1?'<div class="print-pageno">'+(i+1)+' / '+pages+'</div>':'';
-            html+='<div class="print-page"><img src="'+sc.toDataURL('image/jpeg',0.95)+'" style="width:100%;display:block">'+no+'</div>';
+          const k=cloneH?cv.height/cloneH:1;                       // css px (โคลน) -> canvas px
+          const cuts=cloneCuts.map(c=>Math.round(c*k)).concat(cv.height).sort((a,b)=>a-b);  // จุดตัดปลอดภัย = ขอบล่างบล็อก (ห้ามตัดกลางการ์ด)
+          const ranges=[]; let top=0;
+          while(top<cv.height-1){
+            const limit=top+pxPerPage;
+            let bottom=cuts.filter(c=>c>top&&c<=limit).pop();
+            if(bottom==null) bottom=Math.min(limit,cv.height);    // บล็อกเดียวสูงเกิน 1 หน้า -> จำใจตัด
+            ranges.push([top,bottom-top]); top=bottom;
           }
+          let html='';
+          ranges.forEach(([y,h],i)=>{
+            const sc=document.createElement('canvas'); sc.width=cv.width; sc.height=h;
+            sc.getContext('2d').drawImage(cv,0,y,cv.width,h,0,0,cv.width,h);
+            const no=ranges.length>1?'<div class="print-pageno">'+(i+1)+' / '+ranges.length+'</div>':'';
+            html+='<div class="print-page"><img src="'+sc.toDataURL('image/jpeg',0.95)+'" style="width:100%;display:block">'+no+'</div>';
+          });
           portal.innerHTML=html;
           toast('กำลังเปิดหน้าต่าง Print — เลือก "Save as PDF"');
-          setTimeout(()=>{ window.print(); setTimeout(()=>{portal.innerHTML='';},2000); },300);
+          // รอให้รูป (data URL) decode เสร็จก่อน print — กันหน้าว่าง (ตอน print รูปยังโหลดไม่ทัน img สูง 0px)
+          const imgs=[...portal.querySelectorAll('img')];
+          Promise.all(imgs.map(im=>im.decode?im.decode().catch(()=>{}):new Promise(r=>{im.complete?r():im.onload=im.onerror=r;})))
+            .then(()=>setTimeout(()=>{ window.print(); setTimeout(()=>{portal.innerHTML='';},2000); },150));
         }).catch(()=>toast('เกิดข้อผิดพลาด — ลอง Screenshot แทนได้'));
       };
       if(window.html2canvas){ run(); return; }
