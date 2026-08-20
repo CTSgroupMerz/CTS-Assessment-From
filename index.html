@@ -35,7 +35,7 @@ input,button,textarea,select{font-family:inherit}
 .score-slider.on::-moz-range-thumb{border-color:#C0504D}
 .hoverlift{transition:transform .18s,box-shadow .18s;cursor:pointer}
 .hoverlift:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(16,40,70,.16)}
-.recscroll{max-height:360px;overflow-y:auto}
+.recscroll{max-height:min(70vh,620px);overflow-y:auto}
 .recscroll::-webkit-scrollbar{width:7px}.recscroll::-webkit-scrollbar-thumb{background:#CBD5DF;border-radius:99px}
 .toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(20px);background:#0F2438;color:#fff;padding:11px 22px;border-radius:99px;font-size:13.5px;font-weight:600;opacity:0;transition:.3s;z-index:9999;pointer-events:none;white-space:nowrap;box-shadow:0 8px 24px rgba(15,36,56,.35)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -252,7 +252,7 @@ input,button,textarea,select{font-family:inherit}
       <button data-action="filter" data-f="filler" style="padding:7px 15px;border-radius:99px;font-size:12px;font-weight:600;border:1.5px solid #E7ECF1;background:#fff;color:#64748B;cursor:pointer">Filler</button>
       <button data-action="filter" data-f="toxin" style="padding:7px 15px;border-radius:99px;font-size:12px;font-weight:600;border:1.5px solid #E7ECF1;background:#fff;color:#64748B;cursor:pointer">Toxin</button>
     </div>
-    <div class="recscroll" id="records-list" style="background:#fff;border:1px solid #E7ECF1;border-radius:14px;overflow:hidden"></div>
+    <div class="recscroll" id="records-list" style="background:#fff;border:1px solid #E7ECF1;border-radius:14px"></div>
     <div style="text-align:center;margin-top:22px">
       <button data-action="show-credit" style="background:none;border:none;color:#98A6B3;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:5px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h0"/></svg>ผู้พัฒนา</button>
     </div>
