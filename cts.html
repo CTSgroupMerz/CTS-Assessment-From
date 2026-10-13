@@ -589,7 +589,17 @@ details.rubric[open] summary::before{content:'▾ '}
 .sc-part-label.purple{background:var(--purple)}.sc-part-label.sky{background:var(--sky)}.sc-part-label.orange{background:var(--orange)}.sc-part-label.navy{background:var(--navy)}
 @media print{
   #print-summary-portal .report-card .rp-block{break-inside:avoid}
+  #print-summary-portal .print-page{position:relative;page-break-after:always}
+  #print-summary-portal .print-page:last-child{page-break-after:auto}
+  #print-summary-portal .print-pageno{position:absolute;top:3mm;right:4mm;font-size:9px;font-weight:700;color:#5A6B7B;background:rgba(255,255,255,.85);border-radius:5px;padding:1px 7px}
   @page{margin:8mm;size:A4 portrait}
+}
+/* มือถือ: ตารางเลื่อนแนวนอนในกรอบ แทนล้นการ์ด (ไฟล์ JPG/PDF เรนเดอร์จากโคลนกว้าง 820px แยกต่างหาก) */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+@media(max-width:700px){
+  .rp-tblock{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .rp-tblock .rp-table{min-width:640px}
+  .summary-overlay{padding:12px 8px}
 }
 </style>
 <link rel="manifest" href="manifest.webmanifest">
@@ -1492,34 +1502,73 @@ function openReport(){
 function closeReport(){ document.getElementById('summary-overlay').classList.remove('open'); document.body.style.overflow=''; }
 function fileBase(){ return `CTS_Eval_${(fv('cts')||'CTS').trim().replace(/\s+/g,'_')}_Visit${S.visit}`; }
 
-function printReportPDF(){
-  const card = document.getElementById('summary-card');
-  const portal = document.getElementById('print-summary-portal');
-  const clone = card.cloneNode(true);
-  const a = clone.querySelector('.sc-actions'); if (a) a.remove();
-  portal.innerHTML = ''; portal.appendChild(clone);
-  const oldTitle = document.title; document.title = fileBase();
-  toast('กำลังเปิดหน้าต่าง Print — เลือก "Save as PDF"');
-  setTimeout(()=>{ window.print(); setTimeout(()=>{ portal.innerHTML=''; document.title=oldTitle; }, 2000); }, 300);
-}
 function loadScript(src, globalName){
   return new Promise((res,rej)=>{
     if (window[globalName]) return res();
     const s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=()=>rej(new Error('load')); document.head.appendChild(s);
   });
 }
+// เรนเดอร์รายงานจากโคลนกว้าง 820px นอกจอ → ได้เลย์เอาต์เต็มเท่ากันทุกเครื่อง ไม่โดนตัดตามจอมือถือ
+// คืน {cv, cuts}: cuts = ขอบล่างของบล็อก/แถวตาราง (พิกัด canvas) ใช้เป็นจุดตัดหน้า PDF
+function captureReport(){
+  return loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js','html2canvas').then(()=>{
+    const box=document.createElement('div'); box.style.cssText='position:fixed;left:-10000px;top:0;width:820px';
+    const c=document.getElementById('summary-card').cloneNode(true); c.removeAttribute('id');
+    c.style.cssText='width:820px;max-width:820px;border-radius:0;box-shadow:none';
+    const a=c.querySelector('.sc-actions'); if(a) a.remove();
+    c.querySelectorAll('.rp-tblock').forEach(el=>el.style.overflow='visible');
+    box.appendChild(c); document.body.appendChild(box);
+    const top=c.getBoundingClientRect().top, h=c.offsetHeight;
+    const cutsCss=[...c.querySelectorAll('.sc-header,.sc-result,.sc-part-row,.rp-block,.rp-h,.rp-table tr')].map(el=>el.getBoundingClientRect().bottom-top);
+    // ponytail: iOS Safari ทำ canvas ใหญ่เกิน ~16.7M px ไม่ได้ (ได้รูปว่าง) → ลด scale ให้พื้นที่ไม่เกิน 16M
+    const scale=Math.min(2, Math.sqrt(16e6/(820*h)));
+    return html2canvas(c,{scale,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',logging:false,width:820,height:h,windowWidth:820})
+      .then(cv=>{ box.remove(); const k=cv.height/h; return {cv, cuts:cutsCss.map(y=>Math.round(y*k))}; },
+            e=>{ box.remove(); throw e; });
+  });
+}
+function printReportPDF(){
+  const portal = document.getElementById('print-summary-portal');
+  toast('กำลังสร้าง PDF...');
+  captureReport().then(({cv,cuts})=>{
+    const pxPerPage=Math.round(cv.width*281/194);           // พื้นที่ A4 ขอบ 8mm: กว้าง 194mm สูง 281mm
+    cuts=cuts.concat(cv.height).sort((a,b)=>a-b);
+    const ranges=[]; let top=0;
+    while(top<cv.height-1){
+      let bottom=cuts.filter(c=>c>top&&c<=top+pxPerPage).pop();
+      if(bottom==null) bottom=Math.min(top+pxPerPage,cv.height);   // บล็อกเดียวสูงเกินหน้า -> จำใจตัด
+      ranges.push([top,bottom-top]); top=bottom;
+    }
+    portal.innerHTML = ranges.map(([y,h],i)=>{
+      const sc=document.createElement('canvas'); sc.width=cv.width; sc.height=h;
+      sc.getContext('2d').drawImage(cv,0,y,cv.width,h,0,0,cv.width,h);
+      const no=ranges.length>1?`<div class="print-pageno">${i+1} / ${ranges.length}</div>`:'';
+      return `<div class="print-page"><img src="${sc.toDataURL('image/jpeg',0.95)}" style="width:100%;display:block">${no}</div>`;
+    }).join('');
+    const oldTitle = document.title; document.title = fileBase();
+    toast('กำลังเปิดหน้าต่าง Print — เลือก "Save as PDF"');
+    // รอรูป decode ก่อน print กันหน้าว่าง
+    Promise.all([...portal.querySelectorAll('img')].map(im=>im.decode?im.decode().catch(()=>{}):Promise.resolve()))
+      .then(()=>setTimeout(()=>{ window.print(); setTimeout(()=>{ portal.innerHTML=''; document.title=oldTitle; }, 2000); },150));
+  }).catch(()=>toast('❌ สร้าง PDF ไม่ได้ — ตรวจสอบอินเทอร์เน็ต หรือ Screenshot แทน'));
+}
 function exportReportJPG(){
-  const card = document.getElementById('summary-card');
   toast('กำลังสร้างรูปภาพ...');
-  loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js','html2canvas').then(()=>{
-    const act = card.querySelector('.sc-actions'); if (act) act.style.display='none';
-    html2canvas(card,{scale:2,useCORS:true,backgroundColor:'#ffffff',scrollX:0,scrollY:-window.scrollY,logging:false,width:card.offsetWidth,height:card.scrollHeight})
-    .then(canvas=>{
-      if (act) act.style.display='';
-      const a=document.createElement('a'); a.download=fileBase()+'.jpg'; a.href=canvas.toDataURL('image/jpeg',0.93); a.click();
-      toast('✅ บันทึก JPG สำเร็จ!');
-    }).catch(()=>{ if(act) act.style.display=''; toast('❌ เกิดข้อผิดพลาด กรุณาลองใหม่'); });
-  }).catch(()=>toast('❌ โหลดตัวสร้างรูปไม่ได้ — ตรวจสอบอินเทอร์เน็ต'));
+  captureReport().then(({cv})=>{
+    const fname=fileBase()+'.jpg';
+    cv.toBlob(async blob=>{
+      if(!blob){ toast('❌ เกิดข้อผิดพลาด — ลอง Screenshot แทน'); return; }
+      const file=new File([blob],fname,{type:'image/jpeg'});
+      // มือถือ (iOS ไม่รองรับ a.download): เปิด share sheet → บันทึกรูป / LINE / Drive
+      if(navigator.canShare && navigator.canShare({files:[file]})){
+        try{ await navigator.share({files:[file],title:fname}); toast('✅ บันทึก / แชร์รูปแล้ว'); return; }
+        catch(err){ if(err && err.name==='AbortError') return; }
+      }
+      const url=URL.createObjectURL(blob);
+      const link=document.createElement('a'); link.download=fname; link.href=url; link.click();
+      setTimeout(()=>URL.revokeObjectURL(url),4000); toast('✅ บันทึก JPG สำเร็จ!');
+    },'image/jpeg',0.93);
+  }).catch(()=>toast('❌ สร้างรูปไม่ได้ — ตรวจสอบอินเทอร์เน็ต หรือ Screenshot แทน'));
 }
 
 // ══════════════════════════════════════════════════════════════════════
