@@ -1291,7 +1291,7 @@ function gotoDashboard(){
   document.getElementById('action-bar').style.display = 'none';
   document.getElementById('main-hero').style.display = '';
   window.scrollTo(0,0);
-  renderRecords(); updateStats();
+  renderRecords(); updateStats(); pullRecords();
 }
 function resetInputs(){
   document.querySelectorAll('#form-body input, #form-body textarea').forEach(el=>el.value='');
@@ -1313,6 +1313,32 @@ const DB_KEY = 'merz_cts_holistic_v1';
 let activeFilter = 'all', currentRecordId = null;
 function dbLoad(){ try { return JSON.parse(localStorage.getItem(DB_KEY)) || []; } catch(e){ return []; } }
 function dbSave(r){ try { localStorage.setItem(DB_KEY, JSON.stringify(r)); return true; } catch(e){ toast('⚠️ บันทึกไม่ได้ในเบราว์เซอร์นี้'); return false; } }
+
+// ── Shared sync — ใช้ GAS backend ตัวเดียวกับ Doctor (index.html) แยกด้วย app:'cts'
+const API_URL = 'https://script.google.com/macros/s/AKfycbyNxXtIOae_Wrp5qqtKbRx2fTMz0CaoTxalnhArtgDPGsmvlAKy0QdG1Oyx8-0PCpJw/exec';
+async function apiPost(action, payload){
+  const res = await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...payload})});
+  const j = await res.json(); if(!j.ok) throw new Error(j.error||'server error'); return j;
+}
+function markSynced(id){ const rs=dbLoad(), x=rs.find(r=>r.id===id); if(x){ x.syncedAt=new Date().toISOString(); dbSave(rs); } }
+function pushRecord(rec){ if(!rec) return; apiPost('save',{record:{...rec, app:'cts'}}).then(()=>markSynced(rec.id)).catch(e=>toast('ยังไม่ sync ขึ้น server: '+e.message)); }
+function pushDelete(id){ apiPost('delete',{id}).catch(e=>toast('ยังไม่ sync ขึ้น server: '+e.message)); }
+async function pullRecords(){
+  try{
+    const nt = x=>x.updatedAt||x.createdAt||'';
+    const byId = {};
+    ((await apiPost('list',{})).records||[]).filter(r=>r.app==='cts').forEach(r=>{ r.syncedAt=r.syncedAt||nt(r)||'1'; byId[r.id]=r; });
+    const pending = [];
+    dbLoad().forEach(r=>{
+      const s = byId[r.id];
+      if (!s){ if(!r.syncedAt){ byId[r.id]=r; pending.push(r); } } // ponytail: เคย sync แล้วแต่ไม่มีบน server = ถูกลบจากอีกเครื่อง → ทิ้ง
+      else if (nt(r) > nt(s)){ byId[r.id]=r; pending.push(r); }   // แก้ในเครื่องตอนออฟไลน์ → ส่งขึ้น
+    });
+    dbSave(Object.values(byId).sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||'')));
+    renderRecords(); updateStats();
+    pending.forEach(pushRecord);
+  }catch(e){ toast('sync ไม่สำเร็จ: '+e.message); }
+}
 
 function captureData(){
   const texts = {};
@@ -1343,6 +1369,7 @@ function saveRecord(){
     records.unshift(rec); currentRecordId = rec.id;
     if (dbSave(records)) toast('✅ บันทึกข้อมูลสำเร็จ! ('+cts+' · Visit '+data.visit+')');
   }
+  pushRecord(dbLoad().find(r=>r.id===currentRecordId));
 }
 function loadRecord(id){
   const rec = dbLoad().find(r=>r.id===id); if(!rec) return;
@@ -1352,7 +1379,7 @@ function loadRecord(id){
 function deleteRecord(id, evt){
   evt.stopPropagation();
   if (!confirm('ลบข้อมูลนี้?')) return;
-  dbSave(dbLoad().filter(r=>r.id!==id));
+  dbSave(dbLoad().filter(r=>r.id!==id)); pushDelete(id);
   if (currentRecordId===id) currentRecordId=null;
   renderRecords(); updateStats(); toast('🗑 ลบข้อมูลแล้ว');
 }
@@ -1788,7 +1815,7 @@ function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg
 
 // ─── INIT ──────────────────────────────────────────────────────────────
 buildForm(); paintVisit(); calc();
-renderRecords(); updateStats();
+renderRecords(); updateStats(); pullRecords();
 </script>
 </body>
 </html>

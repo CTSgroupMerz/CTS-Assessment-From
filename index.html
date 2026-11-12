@@ -866,7 +866,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     async function pullRecords(){
       if(!API_URL) return;
-      try{ const j=await apiPost('list',{}); dbSave(mergeRecords(dbLoad(),j.records||[])); renderRecords(); updateStats(); }
+      try{ const j=await apiPost('list',{}); dbSave(mergeRecords(dbLoad(),(j.records||[]).filter(r=>r.app!=='cts'))); renderRecords(); updateStats(); }
       catch(e){ toast('sync ไม่สำเร็จ: '+e.message); }
     }
     function pushRecord(rec){ if(API_URL) apiPost('save',{record:rec}).catch(e=>toast('ยังไม่ sync ขึ้น server: '+e.message)); }

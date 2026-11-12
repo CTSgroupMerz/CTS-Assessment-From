@@ -1,5 +1,5 @@
 // Merz Assessment — service worker (app shell cache, offline-first)
-const CACHE = 'merz-assess-v7';
+const CACHE = 'merz-assess-v8';
 const ASSETS = ['./', './index.html', './cts.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './merz-logo.png'];
 
 self.addEventListener('install', (e) => {
